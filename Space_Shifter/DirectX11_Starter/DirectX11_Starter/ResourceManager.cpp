@@ -100,7 +100,7 @@ void ResourceManager::setDeviceContext(ID3D11DeviceContext* deviceContext)
 	returns:
 	If load was successful
 */
-bool ResourceManager::loadVertexShader(char* file, char* key = 0)
+bool ResourceManager::loadVertexShader(char* file, char* key)
 {
 	SimpleVertexShader* vShader;
 	vShader = new SimpleVertexShader(device, deviceContext);
@@ -148,7 +148,7 @@ bool ResourceManager::getVertexShader(char* key, SimpleVertexShader** v)
 	returns:
 	If load was successful
 */
-bool ResourceManager::loadPixelShader(char* file, char* key = 0)
+bool ResourceManager::loadPixelShader(char* file, char* key)
 {
 	SimplePixelShader* pShader;
 	pShader = new SimplePixelShader(device, deviceContext);
@@ -197,7 +197,7 @@ bool ResourceManager::getPixelShader(char* key, SimplePixelShader** p)
 	returns:
 	If load was successful
 */
-bool ResourceManager::loadTexture(char* file, D3D11_SAMPLER_DESC sd, char* key = 0)
+bool ResourceManager::loadTexture(char* file, D3D11_SAMPLER_DESC sd, char* key)
 {
 	//Convert char* to wchar_t*
 	//https://msdn.microsoft.com/en-us/library/ms235631(VS.80).aspx
@@ -257,7 +257,7 @@ bool ResourceManager::getTexture(char* key, ID3D11ShaderResourceView** srv, ID3D
 	returns:
 	If load was successful
 */
-bool ResourceManager::loadMaterial(char* v_name, char* p_name, char* tex_name, char* key = 0)
+bool ResourceManager::loadMaterial(char* v_name, char* p_name, char* tex_name, char* key)
 {
 	//Get all the components needed for a material
 	SimpleVertexShader* v = v_shaders[v_name];
@@ -300,7 +300,7 @@ bool ResourceManager::getMaterial(char* key, Material** material)
 	returns:
 	If load was successful
 */
-bool ResourceManager::loadMesh(char* file, char* key = 0)
+bool ResourceManager::loadMesh(char* file, char* key)
 {
 	Mesh* mesh = new Mesh(file, device);
 

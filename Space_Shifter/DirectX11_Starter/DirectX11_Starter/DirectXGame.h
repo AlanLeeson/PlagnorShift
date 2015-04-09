@@ -16,6 +16,7 @@
 
 #include "dxerr.h"
 #include "GameTimer.h"
+#include "GameStates.h"
 
 // Convenience macro for releasing a COM object
 #define ReleaseMacro(x) { if(x){ x->Release(); x = 0; } }
@@ -64,6 +65,8 @@ public:
 	virtual void OnMouseDown(WPARAM btnState, int x, int y){ }
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)  { }
 	virtual void OnMouseMove(WPARAM btnState, int x, int y){ }
+
+	gameStates gStates;
 
 protected:
 	// Handles window and Direct3D initialization

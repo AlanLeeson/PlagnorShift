@@ -92,6 +92,12 @@ bool DirectXGame::Init()
 	if(!InitDirect3D())
 		return false;
 
+	//initialize the game states
+	gStates.GAME_STATE_MENU = 0;
+	gStates.GAME_STATE_PLAY = 1;
+	gStates.GAME_STATE_PAUSE = 2;
+	gStates.GAME_STATE = gStates.GAME_STATE_MENU;
+
 	return true;
 }
 
@@ -320,9 +326,18 @@ int DirectXGame::Run()
 			else
 			{
 				// Standard game loop type stuff
-				CalculateFrameStats();
-				UpdateScene(timer.DeltaTime());
-				DrawScene();
+				if (gStates.GAME_STATE == gStates.GAME_STATE_MENU){
+					//do nothing
+				}
+				else if (gStates.GAME_STATE == gStates.GAME_STATE_PLAY){
+					CalculateFrameStats();
+					UpdateScene(timer.DeltaTime());
+					DrawScene();
+				}
+				else if (gStates.GAME_STATE == gStates.GAME_STATE_PAUSE){
+					CalculateFrameStats();
+					DrawScene();
+				}
 			}
 		}
 	}
@@ -489,9 +504,16 @@ LRESULT DirectXGame::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_LBUTTONDOWN:
+		if (gStates.GAME_STATE == gStates.GAME_STATE_MENU || gStates.GAME_STATE == gStates.GAME_STATE_PAUSE){
+			gStates.GAME_STATE = gStates.GAME_STATE_PLAY;
+		}
+		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		return 0;
 	case WM_MBUTTONDOWN:
 	case WM_RBUTTONDOWN:
-		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		if (gStates.GAME_STATE == gStates.GAME_STATE_PLAY){
+			gStates.GAME_STATE = gStates.GAME_STATE_PAUSE;
+		}
 		return 0;
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
