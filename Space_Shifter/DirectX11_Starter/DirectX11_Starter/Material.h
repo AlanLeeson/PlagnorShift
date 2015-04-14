@@ -1,6 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "Light.h"
 #include "SimpleShader.h"
 
 using namespace DirectX;
@@ -14,7 +15,8 @@ struct TransformBuffer
 
 struct LightingBuffer
 {
-	
+	DirectionalLight d0;
+	DirectionalLight d1;
 };
 
 class Material

@@ -16,14 +16,17 @@ public:
 	void setDeviceContext(ID3D11DeviceContext*);
 	void setCamera(Camera*);
 	void setEntity(GameEntity*);
-	void setLights(std::vector<Light>);
+	void setLights(std::vector<Light*>);
+	void addEntity(GameEntity*);
 	void addLight(Light*);
+	void addDirectionalLight(DirectionalLight*);
 
 	Camera* getCamera(void);
 	GameEntity* getEntity(void);
-	std::vector<Light> getLights(void);
+	std::vector<Light*> getLights(void);
 
 	void render(GameEntity*, Camera*);
+	void renderAll(Camera*);
 	void renderAllWithShaders(SimpleVertexShader*, SimplePixelShader*);
 
 private:
@@ -33,8 +36,6 @@ private:
 
 	void operator=(RenderManager const&) = delete;
 
-	//Maintain list of all entities
-
 	TransformBuffer b_transform;
 	LightingBuffer b_lighting;
 
@@ -43,7 +44,10 @@ private:
 
 	Camera* camera;
 	GameEntity* entity;
-	std::vector<Light> lights;
+	std::vector<GameEntity*> entities;
+	std::vector<Light*> lights;
+	//Temporary vector until different lights can be parsed out of one vector
+	std::vector<DirectionalLight*> d_lights;
 
 	void setBufferData(void);
 };
