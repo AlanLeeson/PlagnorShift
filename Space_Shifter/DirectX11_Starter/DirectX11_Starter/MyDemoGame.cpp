@@ -116,14 +116,16 @@ bool MyDemoGame::Init()
 
 	// Set up camera-related matrices
 	InitializeCameraMatrices();
-
+	
 	d_light01.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	d_light01.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	d_light01.Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	render_manager->addDirectionalLight(&d_light01);
 
 	d_light02.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	d_light02.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	d_light02.Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
+	render_manager->addDirectionalLight(&d_light02);
 
 	chunk_manager->buildChunk();
 
@@ -134,17 +136,20 @@ bool MyDemoGame::Init()
 // Creates the vertex and index buffers for a single triangle
 void MyDemoGame::createEntities()
 {
-	resource_manager->getMesh("torus.obj", &torus);
-	resource_manager->getMesh("cube.obj", &cube);
+	resource_manager->getMesh("torus", &torus);
+	resource_manager->getMesh("cube", &cube);
 
 	Mesh* tile;
 	resource_manager->getMesh("tile", &tile);
 
 	e_tile = new GameEntity(tile, simpleMat_wood);
 	e_tile->move(-1.5f, 0.0f, 0.0f);
+	render_manager->addEntity(e_tile);
 	e_torus = new GameEntity(torus, simpleMat_wood);
+	render_manager->addEntity(e_torus);
 	e_cube = new GameEntity(cube, simpleMat_metal);
 	e_cube->move(1.5f, 0.0f, 0.0f);
+	render_manager->addEntity(e_cube);
 }
 
 void MyDemoGame::createMaterials()
@@ -164,8 +169,8 @@ void MyDemoGame::loadResources()
 
 void MyDemoGame::loadMeshes()
 {
-	resource_manager->loadMesh("torus.obj", 0);
-	resource_manager->loadMesh("cube.obj", 0);
+	resource_manager->loadMesh("torus.obj", "torus");
+	resource_manager->loadMesh("cube.obj", "cube");
 	resource_manager->loadMesh("Models/tile_default.obj", "tile");
 }
 
@@ -176,10 +181,6 @@ void MyDemoGame::LoadShadersAndInputLayout()
 {
 	resource_manager->loadVertexShader("VertexShader.cso", "Default_Diffuse");
 	resource_manager->loadPixelShader("PixelShader.cso", "Default_Diffuse");
-
-	resource_manager->getVertexShader("Default_Diffuse", &vShader);
-	resource_manager->getPixelShader("Default_Diffuse", &pShader);
-	pShader->SetFloat4("light_am", XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 }
 
 void MyDemoGame::loadTextures()
@@ -257,21 +258,8 @@ void MyDemoGame::DrawScene()
 	deviceContext->IASetInputLayout(inputLayout);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	pShader->SetData(
-		"light_01",
-		&d_light01,
-		sizeof(DirectionalLight));
-
-	pShader->SetData(
-		"light_02",
-		&d_light02,
-		sizeof(DirectionalLight));
-
-	render_manager->render(e_tile, camera);
-	render_manager->render(e_torus, camera);
-	render_manager->render(e_cube, camera);
-	//GameEntity* chunkTile = chunk_manager->getChunk();
-	//render_manager->render(chunkTile, camera);
+	//Renders all game entities with a specific camera
+	render_manager->renderAll(camera);
 
 	// Present the buffer
 	//  - Puts the stuff on the screen

@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "ChunkManager.h"
 #include "GameEntity.h"
+#include "GameStates.h"
 #include "Light.h"
 #include "Material.h"
 #include "Mesh.h"
@@ -76,10 +77,6 @@ private:
 	// Buffers to hold actual geometry
 	ID3D11Buffer* vertexBuffer;
 	ID3D11Buffer* indexBuffer;
-
-	// Our basic shaders for this example
-	SimpleVertexShader* vShader;
-	SimplePixelShader* pShader;
 
 	// A few more odds and ends we'll need
 	ID3D11InputLayout* inputLayout;

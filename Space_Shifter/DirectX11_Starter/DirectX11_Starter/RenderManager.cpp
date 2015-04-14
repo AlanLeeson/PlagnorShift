@@ -13,6 +13,9 @@ RenderManager::RenderManager()
 
 RenderManager::~RenderManager()
 {
+	entities.clear();
+	lights.clear();
+	d_lights.clear();
 }
 
 /*
@@ -44,14 +47,24 @@ void RenderManager::setEntity(GameEntity* entity)
 	this->entity = entity;
 }
 
-void RenderManager::setLights(std::vector<Light> lights)
+void RenderManager::setLights(std::vector<Light*> lights)
 {
 	this->lights = lights;
 }
 
+void RenderManager::addEntity(GameEntity* entity)
+{
+	entities.push_back(entity);
+}
+
 void RenderManager::addLight(Light* light)
 {
-	lights.push_back(*light);
+	lights.push_back(light);
+}
+
+void RenderManager::addDirectionalLight(DirectionalLight* d_light)
+{
+	d_lights.push_back(d_light);
 }
 
 Camera* RenderManager::getCamera(void)
@@ -64,7 +77,7 @@ GameEntity* RenderManager::getEntity(void)
 	return this->entity;
 }
 
-std::vector<Light> RenderManager::getLights(void)
+std::vector<Light*> RenderManager::getLights(void)
 {
 	return this->lights;
 }
@@ -74,6 +87,11 @@ void RenderManager::setBufferData(void)
 	b_transform.World = entity->getWorldMatrix();
 	b_transform.Projection = camera->getProjectionMatrix();
 	b_transform.View = camera->getViewMatrix();
+
+
+	b_lighting.d0 = *d_lights[0];
+	b_lighting.d1 = *d_lights[1];
+	
 
 	Material* mat = entity->getMaterial();
 	mat->mapShaderData(b_transform, b_lighting);
@@ -87,6 +105,15 @@ void RenderManager::render(GameEntity* renderEntity, Camera* renderCamera)
 	setBufferData();
 
 	entity->draw(device, deviceContext);
+}
+
+void RenderManager::renderAll(Camera* renderCamera)
+{
+	for (int i = 0; i < entities.size(); i++)
+	{
+		GameEntity* entity = entities[i];
+		render(entity, renderCamera);
+	}
 }
 
 void RenderManager::renderAllWithShaders(SimpleVertexShader* vShader, SimplePixelShader* pShader)

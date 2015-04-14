@@ -7,12 +7,17 @@ using namespace DirectX;
 
 struct Light
 {
-
-};
-
-struct DirectionalLight
-{
 	XMFLOAT4 AmbientColor;
 	XMFLOAT4 DiffuseColor;
+};
+
+struct DirectionalLight : Light
+{
 	XMFLOAT3 Direction;
+};
+
+struct PointLight : Light
+{
+	XMFLOAT3 Position;
+	float Distance;
 };

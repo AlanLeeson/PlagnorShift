@@ -29,6 +29,19 @@ void Material::mapShaderData(TransformBuffer b_transform, LightingBuffer b_light
 	vShader->SetMatrix4x4("world", b_transform.World);
 	vShader->SetMatrix4x4("view", b_transform.View);
 	vShader->SetMatrix4x4("projection", b_transform.Projection);
+
+	pShader->SetFloat4("light_am", XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+
+	pShader->SetData(
+		"dlight_01",
+		&b_lighting.d0,
+		sizeof(DirectionalLight));
+
+	pShader->SetData(
+		"dlight_02",
+		&b_lighting.d1,
+		sizeof(DirectionalLight));
+
 	pShader->SetShaderResourceView("diffuseTexture", srv);
 	pShader->SetSamplerState("basicSampler", sampler);
 }

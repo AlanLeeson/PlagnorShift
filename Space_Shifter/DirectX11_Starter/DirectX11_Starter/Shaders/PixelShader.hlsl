@@ -17,8 +17,8 @@ struct DirectionalLight
 
 cbuffer LightData : register(b0)
 {
-	DirectionalLight light_01;
-	DirectionalLight light_02;
+	DirectionalLight dlight_01;
+	DirectionalLight dlight_02;
 	float4 light_am;
 }
 
@@ -32,13 +32,13 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
 
-	float3 light_dir = normalize(-light_01.Direction);
+	float3 light_dir = normalize(-dlight_01.Direction);
 	float light_amount = saturate(dot(input.normal, light_dir));
-	float4 light_01_final = light_01.AmbientColor + light_amount * light_01.DiffuseColor;
+	float4 dlight_01_final = dlight_01.AmbientColor + light_amount * dlight_01.DiffuseColor;
 
-	light_dir = normalize(-light_02.Direction);
+	light_dir = normalize(-dlight_02.Direction);
 	light_amount = saturate(dot(input.normal, light_dir));
-	float4 light_02_final = light_02.AmbientColor + light_amount * light_02.DiffuseColor;
+	float4 dlight_02_final = dlight_02.AmbientColor + light_amount * dlight_02.DiffuseColor;
 
-	return (light_01_final + light_02_final + light_am) * surfaceColor;
+	return (dlight_01_final + dlight_02_final + light_am) * surfaceColor;
 }
