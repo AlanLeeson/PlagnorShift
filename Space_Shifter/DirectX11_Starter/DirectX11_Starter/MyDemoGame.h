@@ -66,15 +66,15 @@ private:
 	DirectionalLight d_light02;
 	bool whichCam;
 
-	Material* simpleMat_wood;
-	Material* simpleMat_metal;
+	Material* railTexture;
 
-	Mesh* torus;
-	Mesh* cube;
+	Mesh* rail;
+	Mesh* rail2;
+	Mesh* rail3;
 
-	GameEntity* e_torus;
-	GameEntity* e_cube;
-	GameEntity* e_tile;
+	GameEntity* e_rail;
+	GameEntity* e_rail2;
+	GameEntity* e_rail3;
 
 	// Buffers to hold actual geometry
 	ID3D11Buffer* vertexBuffer;
