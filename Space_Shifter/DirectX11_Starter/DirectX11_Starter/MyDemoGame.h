@@ -60,9 +60,11 @@ private:
 	ChunkManager* chunk_manager;
 
 	Camera* camera;
+	Camera* gameCamera;
 
 	DirectionalLight d_light01;
 	DirectionalLight d_light02;
+	bool whichCam;
 
 	Material* simpleMat_wood;
 	Material* simpleMat_metal;

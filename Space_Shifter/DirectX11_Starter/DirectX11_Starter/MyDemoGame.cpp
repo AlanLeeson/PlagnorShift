@@ -67,6 +67,9 @@ MyDemoGame::~MyDemoGame()
 	delete camera;
 	camera = nullptr;
 
+	delete gameCamera;
+	camera = nullptr;
+
 	delete e_torus;
 	e_torus = nullptr;
 
@@ -116,6 +119,7 @@ bool MyDemoGame::Init()
 
 	// Set up camera-related matrices
 	InitializeCameraMatrices();
+	whichCam = true;
 	
 	d_light01.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	d_light01.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -205,6 +209,7 @@ void MyDemoGame::loadTextures()
 void MyDemoGame::InitializeCameraMatrices()
 {
 	camera = new Camera(AspectRatio());
+	gameCamera = new Camera(AspectRatio());
 }
 
 #pragma endregion
@@ -220,6 +225,7 @@ void MyDemoGame::OnResize()
 	// Update our projection matrix since the window size changed
 	//Resizing hapens before camera is initialized?
 	if (camera) camera->resize(AspectRatio());
+	if (gameCamera) gameCamera->resize(AspectRatio());
 }
 #pragma endregion
 
@@ -231,6 +237,8 @@ void MyDemoGame::UpdateScene(float dt)
 	// Take input, update game logic, etc.
 
 	camera->Update(dt);
+	//gameCamera->Update(dt);
+	
 
 	e_torus->rotate(0.0f, 0.0f, 0.5f * dt);
 }
@@ -259,7 +267,12 @@ void MyDemoGame::DrawScene()
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//Renders all game entities with a specific camera
-	render_manager->renderAll(camera);
+	if (whichCam){
+		render_manager->renderAll(camera);
+	}
+	else{
+		render_manager->renderAll(gameCamera);
+	}
 
 	// Present the buffer
 	//  - Puts the stuff on the screen
@@ -276,6 +289,7 @@ void MyDemoGame::DrawScene()
 
 void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 {
+	whichCam = !whichCam;
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 
@@ -293,6 +307,9 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 	camera->rotateCameraPitch(diffX);
 	float diffY = (float)(y - prevMousePos.y);
 	camera->rotateCameraRoll(diffY);
+
+	//gameCamera->rotateCameraPitch(0);
+	//gameCamera->rotateCameraRoll(0);
 
 	prevMousePos.x = x;
 	prevMousePos.y = y;
