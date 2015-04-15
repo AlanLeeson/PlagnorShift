@@ -67,14 +67,17 @@ private:
 	bool whichCam;
 
 	Material* railTexture;
+	Material* simpleMat_racer;
 
 	Mesh* rail;
 	Mesh* rail2;
 	Mesh* rail3;
+	Mesh* racer;
 
 	GameEntity* e_rail;
 	GameEntity* e_rail2;
 	GameEntity* e_rail3;
+	GameEntity* e_racer;
 
 	// Buffers to hold actual geometry
 	ID3D11Buffer* vertexBuffer;

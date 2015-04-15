@@ -77,6 +77,10 @@ MyDemoGame::~MyDemoGame()
 	delete e_rail3;
 	e_rail3 = nullptr;
 
+
+	delete e_racer;
+	e_racer = nullptr;
+
 	// Release all of the D3D stuff that's still hanging out
 	ReleaseMacro(vertexBuffer);
 	ReleaseMacro(indexBuffer);
@@ -141,6 +145,7 @@ void MyDemoGame::createEntities()
 	resource_manager->getMesh("rail", &rail);
 	resource_manager->getMesh("rail", &rail2);
 	resource_manager->getMesh("rail", &rail3);
+	resource_manager->getMesh("racer", &racer);
 
 	e_rail = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail);
@@ -160,6 +165,13 @@ void MyDemoGame::createEntities()
 	e_rail->setPosition(-3.0f, -2.0f, 12.0f);
 	e_rail2->setPosition(0.5f, -2.0f, 12.0f);
 	e_rail3->setPosition(3.5f, -2.0f, 12.0f);
+
+	//all racer stuff
+	e_racer = new GameEntity(racer, simpleMat_racer);
+	render_manager->addEntity(e_racer);
+	e_racer->setScale(0.6f, 0.6f, 0.6f);
+	e_racer->setPosition(1.34, -1, 7);
+	e_racer->rotate(0.0f, 0, 0.05f);
 }
 
 void MyDemoGame::createMaterials()
@@ -167,6 +179,10 @@ void MyDemoGame::createMaterials()
 	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "RailTexture", "RailTexture");
 
 	resource_manager->getMaterial("RailTexture", &railTexture);
+
+
+	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "racer", "racer");
+	resource_manager->getMaterial("racer", &simpleMat_racer);
 }
 
 void MyDemoGame::loadResources()
@@ -180,6 +196,8 @@ void MyDemoGame::loadMeshes()
 	resource_manager->loadMesh("rail.obj", "rail");
 	resource_manager->loadMesh("rail.obj", "rail2");
 	resource_manager->loadMesh("rail.obj", "rail3");
+
+	resource_manager->loadMesh("racer.obj", "racer");
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -208,6 +226,7 @@ void MyDemoGame::loadTextures()
 	resource_manager->loadTexture("WoodFine0031_19_S.jpg", sd, "wood");
 	resource_manager->loadTexture("MetalBare0144_1_S.jpg", sd, "metal");
 	resource_manager->loadTexture("RailTexture.png", sd, "RailTexture");
+	resource_manager->loadTexture("plagnortex.png", sd, "racer");
 }
 
 // Initializes the matrices necessary to represent our 3D camera
