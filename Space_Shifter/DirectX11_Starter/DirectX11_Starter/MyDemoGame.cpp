@@ -67,14 +67,19 @@ MyDemoGame::~MyDemoGame()
 	delete camera;
 	camera = nullptr;
 
-	delete e_torus;
-	e_torus = nullptr;
+	delete gameCamera;
+	camera = nullptr;
 
-	delete e_cube;
-	e_cube = nullptr;
+	delete e_rail;
+	e_rail = nullptr;
+	delete e_rail2;
+	e_rail2 = nullptr;
+	delete e_rail3;
+	e_rail3 = nullptr;
 
-	delete e_tile;
-	e_tile = nullptr;
+
+	delete e_racer;
+	e_racer = nullptr;
 
 	delete player;
 	player = nullptr;
@@ -119,6 +124,7 @@ bool MyDemoGame::Init()
 
 	// Set up camera-related matrices
 	InitializeCameraMatrices();
+	whichCam = true;
 	
 	d_light01.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	d_light01.DiffuseColor = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
@@ -139,6 +145,7 @@ bool MyDemoGame::Init()
 // Creates the vertex and index buffers for a single triangle
 void MyDemoGame::createEntities()
 {
+<<<<<<< HEAD
 	resource_manager->getMesh("torus", &torus);
 	resource_manager->getMesh("cube", &cube);
 
@@ -157,15 +164,49 @@ void MyDemoGame::createEntities()
 	// Initialize the player
 	player = new Player(cube, simpleMat_metal);
 	render_manager->addEntity(player);
+=======
+	resource_manager->getMesh("rail", &rail);
+	resource_manager->getMesh("rail", &rail2);
+	resource_manager->getMesh("rail", &rail3);
+	resource_manager->getMesh("racer", &racer);
+
+	e_rail = new GameEntity(rail, railTexture);
+	render_manager->addEntity(e_rail);
+	e_rail2 = new GameEntity(rail2, railTexture);
+	render_manager->addEntity(e_rail2);
+	e_rail3 = new GameEntity(rail3, railTexture);
+	render_manager->addEntity(e_rail3);
+
+	//position rails
+	e_rail->rotate(0.0f, 1.55f, -0.05f);
+	e_rail->setScale(2.0f, 1.0f, 1.0f);
+	e_rail2->rotate(0.0f, 1.55f, -0.05f);
+	e_rail2->setScale(2.0f, 1.0f, 1.0f);
+	e_rail3->rotate(0.0f, 1.55f, -0.05f);
+	e_rail3->setScale(2.0f, 1.0f, 1.0f);
+
+	e_rail->setPosition(-3.0f, -2.0f, 12.0f);
+	e_rail2->setPosition(0.5f, -2.0f, 12.0f);
+	e_rail3->setPosition(3.5f, -2.0f, 12.0f);
+
+	//all racer stuff
+	e_racer = new GameEntity(racer, simpleMat_racer);
+	render_manager->addEntity(e_racer);
+	e_racer->setScale(0.6f, 0.6f, 0.6f);
+	e_racer->setPosition(1.34, -1, 7);
+	e_racer->rotate(0.0f, 0, 0.05f);
+>>>>>>> origin/master
 }
 
 void MyDemoGame::createMaterials()
 {
-	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "wood", "wood");
-	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "metal", "metal");
+	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "RailTexture", "RailTexture");
 
-	resource_manager->getMaterial("wood", &simpleMat_wood);
-	resource_manager->getMaterial("metal", &simpleMat_metal);
+	resource_manager->getMaterial("RailTexture", &railTexture);
+
+
+	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "racer", "racer");
+	resource_manager->getMaterial("racer", &simpleMat_racer);
 }
 
 void MyDemoGame::loadResources()
@@ -176,9 +217,11 @@ void MyDemoGame::loadResources()
 
 void MyDemoGame::loadMeshes()
 {
-	resource_manager->loadMesh("torus.obj", "torus");
-	resource_manager->loadMesh("cube.obj", "cube");
-	resource_manager->loadMesh("Models/tile_default.obj", "tile");
+	resource_manager->loadMesh("rail.obj", "rail");
+	resource_manager->loadMesh("rail.obj", "rail2");
+	resource_manager->loadMesh("rail.obj", "rail3");
+
+	resource_manager->loadMesh("racer.obj", "racer");
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -206,12 +249,15 @@ void MyDemoGame::loadTextures()
 
 	resource_manager->loadTexture("WoodFine0031_19_S.jpg", sd, "wood");
 	resource_manager->loadTexture("MetalBare0144_1_S.jpg", sd, "metal");
+	resource_manager->loadTexture("RailTexture.png", sd, "RailTexture");
+	resource_manager->loadTexture("plagnortex.png", sd, "racer");
 }
 
 // Initializes the matrices necessary to represent our 3D camera
 void MyDemoGame::InitializeCameraMatrices()
 {
 	camera = new Camera(AspectRatio());
+	gameCamera = new Camera(AspectRatio());
 }
 
 #pragma endregion
@@ -227,6 +273,7 @@ void MyDemoGame::OnResize()
 	// Update our projection matrix since the window size changed
 	//Resizing hapens before camera is initialized?
 	if (camera) camera->resize(AspectRatio());
+	if (gameCamera) gameCamera->resize(AspectRatio());
 }
 #pragma endregion
 
@@ -238,8 +285,8 @@ void MyDemoGame::UpdateScene(float dt)
 	// Take input, update game logic, etc.
 
 	camera->Update(dt);
-
-	e_torus->rotate(0.0f, 0.0f, 0.5f * dt);
+	//gameCamera->Update(dt);
+	
 }
 
 // Clear the screen, redraw everything, present
@@ -266,7 +313,12 @@ void MyDemoGame::DrawScene()
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//Renders all game entities with a specific camera
-	render_manager->renderAll(camera);
+	if (whichCam){
+		render_manager->renderAll(camera);
+	}
+	else{
+		render_manager->renderAll(gameCamera);
+	}
 
 	// Present the buffer
 	//  - Puts the stuff on the screen
@@ -283,6 +335,7 @@ void MyDemoGame::DrawScene()
 
 void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 {
+	whichCam = !whichCam;
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 
@@ -300,6 +353,9 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 	camera->rotateCameraPitch(diffX);
 	float diffY = (float)(y - prevMousePos.y);
 	camera->rotateCameraRoll(diffY);
+
+	//gameCamera->rotateCameraPitch(0);
+	//gameCamera->rotateCameraRoll(0);
 
 	prevMousePos.x = x;
 	prevMousePos.y = y;

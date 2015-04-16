@@ -504,13 +504,17 @@ LRESULT DirectXGame::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_LBUTTONDOWN:
-		if (gStates.GAME_STATE == gStates.GAME_STATE_MENU || gStates.GAME_STATE == gStates.GAME_STATE_PAUSE){
+		if (gStates.GAME_STATE == gStates.GAME_STATE_MENU){
 			gStates.GAME_STATE = gStates.GAME_STATE_PLAY;
 		}
 		OnMouseDown(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
 	case WM_MBUTTONDOWN:
 	case WM_RBUTTONDOWN:
+		if (gStates.GAME_STATE == gStates.GAME_STATE_PAUSE){
+			gStates.GAME_STATE = gStates.GAME_STATE_PLAY;
+			return 0;
+		}
 		if (gStates.GAME_STATE == gStates.GAME_STATE_PLAY){
 			gStates.GAME_STATE = gStates.GAME_STATE_PAUSE;
 		}

@@ -60,19 +60,24 @@ private:
 	ChunkManager* chunk_manager;
 
 	Camera* camera;
+	Camera* gameCamera;
 
 	DirectionalLight d_light01;
 	DirectionalLight d_light02;
+	bool whichCam;
 
-	Material* simpleMat_wood;
-	Material* simpleMat_metal;
+	Material* railTexture;
+	Material* simpleMat_racer;
 
-	Mesh* torus;
-	Mesh* cube;
+	Mesh* rail;
+	Mesh* rail2;
+	Mesh* rail3;
+	Mesh* racer;
 
-	GameEntity* e_torus;
-	GameEntity* e_cube;
-	GameEntity* e_tile;
+	GameEntity* e_rail;
+	GameEntity* e_rail2;
+	GameEntity* e_rail3;
+	GameEntity* e_racer;
 
 	// Buffers to hold actual geometry
 	ID3D11Buffer* vertexBuffer;
