@@ -262,9 +262,18 @@ void MyDemoGame::OnResize()
 void MyDemoGame::UpdateScene(float dt)
 {
 	// Take input, update game logic, etc.
-
-	camera->Update(dt);
+	if (whichCam){
+		camera->Update(dt);
+	}
 	//gameCamera->Update(dt);
+	if (GetAsyncKeyState('A') & 0x8000)
+	{
+		e_racer->move(-0.05, 0, 0);
+	}
+	if (GetAsyncKeyState('D') & 0x8000)
+	{
+		e_racer->move(0.05, 0, 0);
+	}
 	
 }
 
@@ -332,9 +341,6 @@ void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 	camera->rotateCameraPitch(diffX);
 	float diffY = (float)(y - prevMousePos.y);
 	camera->rotateCameraRoll(diffY);
-
-	//gameCamera->rotateCameraPitch(0);
-	//gameCamera->rotateCameraRoll(0);
 
 	prevMousePos.x = x;
 	prevMousePos.y = y;
