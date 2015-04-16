@@ -145,26 +145,6 @@ bool MyDemoGame::Init()
 // Creates the vertex and index buffers for a single triangle
 void MyDemoGame::createEntities()
 {
-<<<<<<< HEAD
-	resource_manager->getMesh("torus", &torus);
-	resource_manager->getMesh("cube", &cube);
-
-	Mesh* tile;
-	resource_manager->getMesh("tile", &tile);
-
-	e_tile = new GameEntity(tile, simpleMat_wood);
-	e_tile->move(-1.5f, 0.0f, 0.0f);
-	render_manager->addEntity(e_tile);
-	e_torus = new GameEntity(torus, simpleMat_wood);
-	render_manager->addEntity(e_torus);
-	e_cube = new GameEntity(cube, simpleMat_metal);
-	e_cube->move(1.5f, 0.0f, 0.0f);
-	render_manager->addEntity(e_cube);
-
-	// Initialize the player
-	player = new Player(cube, simpleMat_metal);
-	render_manager->addEntity(player);
-=======
 	resource_manager->getMesh("rail", &rail);
 	resource_manager->getMesh("rail", &rail2);
 	resource_manager->getMesh("rail", &rail3);
@@ -190,12 +170,11 @@ void MyDemoGame::createEntities()
 	e_rail3->setPosition(3.5f, -2.0f, 12.0f);
 
 	//all racer stuff
-	e_racer = new GameEntity(racer, simpleMat_racer);
+	e_racer = new Player(racer, simpleMat_racer);
 	render_manager->addEntity(e_racer);
 	e_racer->setScale(0.6f, 0.6f, 0.6f);
 	e_racer->setPosition(1.34, -1, 7);
 	e_racer->rotate(0.0f, 0, 0.05f);
->>>>>>> origin/master
 }
 
 void MyDemoGame::createMaterials()

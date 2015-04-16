@@ -19,13 +19,9 @@ Camera::Camera(float aspectRatio)
 	xrot = 0.0f;
 	yrot = 0.0f;
 	moveSpeed = 1.0f;
-<<<<<<< HEAD
 	rotSpeed = 0.001f;
 
-=======
-	rotSpeed = 0.01f;
 	Update(1.0);
->>>>>>> origin/master
 }
 
 
