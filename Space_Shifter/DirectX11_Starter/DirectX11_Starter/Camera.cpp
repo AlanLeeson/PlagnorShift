@@ -19,7 +19,7 @@ Camera::Camera(float aspectRatio)
 	xrot = 0.0f;
 	yrot = 0.0f;
 	moveSpeed = 1.0f;
-	rotSpeed = 0.01f;
+	rotSpeed = 0.001f;
 
 }
 

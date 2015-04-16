@@ -142,6 +142,7 @@ Mesh::Mesh(const char* filename, ID3D11Device* device)
 	//    can be used directly for the index buffer: &indices[0] is the first int
 	// - "triangleCounter" is BOTH the number of vertices and the number of indices
 
+	this->vertexList = verts;
 	this->vertices = &verts[0];
 	this->indicies = &indices[0];
 	this->vCount = verts.size();
@@ -179,6 +180,11 @@ Mesh::~Mesh()
 
 	ReleaseMacro(vertexBuffer);
 	ReleaseMacro(indexBuffer);
+}
+
+std::vector<Vertex> Mesh::getVertexList(void)
+{
+	return vertexList;
 }
 
 ID3D11Buffer* Mesh::getVertexBuffer(void)

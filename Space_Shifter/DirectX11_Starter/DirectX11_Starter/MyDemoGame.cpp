@@ -76,6 +76,9 @@ MyDemoGame::~MyDemoGame()
 	delete e_tile;
 	e_tile = nullptr;
 
+	delete player;
+	player = nullptr;
+
 	// Release all of the D3D stuff that's still hanging out
 	ReleaseMacro(vertexBuffer);
 	ReleaseMacro(indexBuffer);
@@ -150,6 +153,10 @@ void MyDemoGame::createEntities()
 	e_cube = new GameEntity(cube, simpleMat_metal);
 	e_cube->move(1.5f, 0.0f, 0.0f);
 	render_manager->addEntity(e_cube);
+
+	// Initialize the player
+	player = new Player(cube, simpleMat_metal);
+	render_manager->addEntity(player);
 }
 
 void MyDemoGame::createMaterials()

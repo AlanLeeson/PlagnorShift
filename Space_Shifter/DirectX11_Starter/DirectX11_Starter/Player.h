@@ -10,5 +10,6 @@ public:
 	~Player();
 
 private:
+	void movePlayer();
 };
 

@@ -5,6 +5,7 @@
 #include "Mesh.h"
 #include "SimpleShader.h"
 #include "VSConstantBufferLayout.h"
+#include "BoundingBoxClass.h"
 
 class GameEntity
 {
@@ -51,5 +52,7 @@ private:
 	XMFLOAT3 _scale;
 
 	bool isMatrixDirty;
+
+	BoundingBoxClass* boundingBox;
 };
 

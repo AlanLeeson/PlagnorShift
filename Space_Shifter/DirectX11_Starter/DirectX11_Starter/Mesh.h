@@ -16,11 +16,16 @@ public:
 	ID3D11Buffer* getVertexBuffer(void);
 	ID3D11Buffer* getIndexBuffer(void);
 
+	std::vector<Vertex> getVertexList(void);
+
 	int getIndexCount(void);
 
 	void draw(ID3D11Device*, ID3D11DeviceContext*);
 
 private:
+	// Used to determine bounding box for collisions
+	std::vector<Vertex> vertexList;
+
 	Vertex* vertices;
 	unsigned int* indicies;
 	int vCount;
