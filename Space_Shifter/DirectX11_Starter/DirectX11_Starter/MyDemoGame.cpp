@@ -169,12 +169,9 @@ void MyDemoGame::createEntities()
 	e_rail2->setPosition(0.5f, -2.0f, 12.0f);
 	e_rail3->setPosition(3.5f, -2.0f, 12.0f);
 
-	//all racer stuff
-	e_racer = new Player(racer, simpleMat_racer);
-	render_manager->addEntity(e_racer);
-	e_racer->setScale(0.6f, 0.6f, 0.6f);
-	e_racer->setPosition(1.34, -1, 7);
-	e_racer->rotate(0.0f, 0, 0.05f);
+	// Player
+	player = new Player(racer, simpleMat_racer);
+	render_manager->addEntity(player);
 }
 
 void MyDemoGame::createMaterials()
@@ -200,7 +197,7 @@ void MyDemoGame::loadMeshes()
 	resource_manager->loadMesh("rail.obj", "rail2");
 	resource_manager->loadMesh("rail.obj", "rail3");
 
-	resource_manager->loadMesh("racer.obj", "racer");
+	resource_manager->loadMesh("cube.obj", "racer");
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -268,12 +265,14 @@ void MyDemoGame::UpdateScene(float dt)
 	//gameCamera->Update(dt);
 	if (GetAsyncKeyState('A') & 0x8000)
 	{
-		e_racer->move(-0.05, 0, 0);
+		player->move(-1);
 	}
 	if (GetAsyncKeyState('D') & 0x8000)
 	{
-		e_racer->move(0.05, 0, 0);
+		player->move(1);
 	}
+
+	player->Update(dt);
 	
 }
 
@@ -327,20 +326,20 @@ void MyDemoGame::OnMouseDown(WPARAM btnState, int x, int y)
 	prevMousePos.x = x;
 	prevMousePos.y = y;
 
-	SetCapture(hMainWnd);
+	//SetCapture(hMainWnd);
 }
 
 void MyDemoGame::OnMouseUp(WPARAM btnState, int x, int y)
 {
-	ReleaseCapture();
+	//ReleaseCapture();
 }
 
 void MyDemoGame::OnMouseMove(WPARAM btnState, int x, int y)
 {
 	float diffX = (float)(x - prevMousePos.x);
-	camera->rotateCameraPitch(diffX);
+	//camera->rotateCameraPitch(diffX);
 	float diffY = (float)(y - prevMousePos.y);
-	camera->rotateCameraRoll(diffY);
+	//camera->rotateCameraRoll(diffY);
 
 	prevMousePos.x = x;
 	prevMousePos.y = y;
