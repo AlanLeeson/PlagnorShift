@@ -77,10 +77,6 @@ MyDemoGame::~MyDemoGame()
 	delete e_rail3;
 	e_rail3 = nullptr;
 
-
-	delete e_racer;
-	e_racer = nullptr;
-
 	delete player;
 	player = nullptr;
 
