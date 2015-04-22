@@ -16,6 +16,7 @@
 #include "Vertex.h"
 #include "VSConstantBufferLayout.h"
 #include "WICTextureLoader.h"
+#include "Obstacle.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -68,6 +69,7 @@ private:
 
 	Material* railTexture;
 	Material* simpleMat_racer;
+	Material* obstacleTexture;
 
 	Mesh* rail;
 	Mesh* rail2;
@@ -92,4 +94,7 @@ private:
 	POINT prevMousePos;
 
 	Player* player;
+
+	Mesh* m_obstacle;
+	Obstacle* obstacle;
 };

@@ -145,6 +145,7 @@ void MyDemoGame::createEntities()
 	resource_manager->getMesh("rail", &rail2);
 	resource_manager->getMesh("rail", &rail3);
 	resource_manager->getMesh("racer", &racer);
+	resource_manager->getMesh("obstacle", &m_obstacle);
 
 	e_rail = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail);
@@ -168,17 +169,22 @@ void MyDemoGame::createEntities()
 	// Player
 	player = new Player(racer, simpleMat_racer);
 	render_manager->addEntity(player);
+
+	// Obstacles
+	obstacle = new Obstacle(m_obstacle, obstacleTexture);
+	render_manager->addEntity(obstacle);
 }
 
 void MyDemoGame::createMaterials()
 {
 	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "RailTexture", "RailTexture");
-
 	resource_manager->getMaterial("RailTexture", &railTexture);
-
 
 	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "racer", "racer");
 	resource_manager->getMaterial("racer", &simpleMat_racer);
+
+	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "wood", "obstacle");
+	resource_manager->getMaterial("obstacle", &obstacleTexture);
 }
 
 void MyDemoGame::loadResources()
@@ -194,6 +200,7 @@ void MyDemoGame::loadMeshes()
 	resource_manager->loadMesh("rail.obj", "rail3");
 
 	resource_manager->loadMesh("cube.obj", "racer");
+	resource_manager->loadMesh("cube.obj", "obstacle");
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -269,6 +276,7 @@ void MyDemoGame::UpdateScene(float dt)
 	}
 
 	player->Update(dt);
+	obstacle->Update(dt);
 	
 }
 
