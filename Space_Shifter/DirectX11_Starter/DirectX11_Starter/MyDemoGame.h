@@ -17,6 +17,7 @@
 #include "VSConstantBufferLayout.h"
 #include "WICTextureLoader.h"
 #include "Obstacle.h"
+#include "ObstacleManager.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -96,5 +97,5 @@ private:
 	Player* player;
 
 	Mesh* m_obstacle;
-	Obstacle* obstacle;
+	ObstacleManager* obstacleManager;
 };

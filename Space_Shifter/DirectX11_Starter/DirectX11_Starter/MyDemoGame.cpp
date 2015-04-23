@@ -80,6 +80,9 @@ MyDemoGame::~MyDemoGame()
 	delete player;
 	player = nullptr;
 
+	delete obstacleManager;
+	obstacleManager = nullptr;
+
 	// Release all of the D3D stuff that's still hanging out
 	ReleaseMacro(vertexBuffer);
 	ReleaseMacro(indexBuffer);
@@ -171,8 +174,12 @@ void MyDemoGame::createEntities()
 	render_manager->addEntity(player);
 
 	// Obstacles
-	obstacle = new Obstacle(m_obstacle, obstacleTexture);
-	render_manager->addEntity(obstacle);
+	obstacleManager = new ObstacleManager(1, m_obstacle, obstacleTexture);
+	vector<Obstacle*> obstacles = obstacleManager->GetObstacles();
+	for (int i = 0; i < obstacleManager->GetCount(); i++)
+	{
+		render_manager->addEntity(obstacles[i]);
+	}
 }
 
 void MyDemoGame::createMaterials()
@@ -276,7 +283,7 @@ void MyDemoGame::UpdateScene(float dt)
 	}
 
 	player->Update(dt);
-	obstacle->Update(dt);
+	obstacleManager->Update(dt);
 	
 }
 

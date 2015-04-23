@@ -6,8 +6,9 @@ Obstacle::Obstacle(Mesh* mesh, Material* material)
 	positions = { -3.5f, 0.0f, 3.5f };
 
 	animateMovement = false;
-	speed = 10.0f;
+	active = false;
 
+	speed = 10.0f;
 	startPosZ = 20.0f;
 	finishPosZ = 0.0f;
 
@@ -18,19 +19,29 @@ Obstacle::~Obstacle(void)
 {
 }
 
+float Obstacle::Active(void)
+{
+	return active;
+}
+
+void Obstacle::SetActive(bool active)
+{
+	this->active = active;
+}
+
 void Obstacle::ResetLocation(void)
 {
 	float startX = positions[rand() % 3];
 	GameEntity::setPosition(startX, -0.75f, startPosZ);
 }
 
+bool Obstacle::OutOfBounds(void)
+{
+	XMFLOAT3 position = GameEntity::getPosition();
+	return position.z <= finishPosZ;
+}
+
 void Obstacle::Update(float dt)
 {
 	GameEntity::move(0.0f, 0.0f, -speed * dt);
-	XMFLOAT3 position = GameEntity::getPosition();
-
-	if (position.z <= finishPosZ)
-	{
-		ResetLocation();
-	}
 }
