@@ -178,6 +178,11 @@ void GameEntity::createWorldMatrix()
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
 }
 
+void GameEntity::setShaderVariables()
+{
+
+}
+
 void GameEntity::draw(ID3D11Device* device, ID3D11DeviceContext* context)
 {
 	if (isMatrixDirty)

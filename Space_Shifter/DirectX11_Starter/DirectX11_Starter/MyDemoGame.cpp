@@ -61,6 +61,12 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance) : DirectXGame(hInstance)
 
 MyDemoGame::~MyDemoGame()
 {
+	delete light_sphere01;
+	light_sphere01 = nullptr;
+
+	delete light_sphere02;
+	light_sphere02 = nullptr;
+
 	delete chunk_manager;
 	chunk_manager = nullptr;
 
@@ -133,6 +139,18 @@ bool MyDemoGame::Init()
 	d_light02.Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	render_manager->addDirectionalLight(&d_light02);
 
+	p_light01.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	p_light01.DiffuseColor = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	p_light01.Position = XMFLOAT3(2.0f, 0.0f, 6.0f);
+	p_light01.Distance = 5.0f;
+	render_manager->addPointLight(&p_light01);
+
+	p_light02.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	p_light02.DiffuseColor = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	p_light02.Position = XMFLOAT3(-5.0f, 0.0f, 0.0f);
+	p_light02.Distance = 5.0f;
+	//render_manager->addPointLight(&p_light02);
+
 	chunk_manager->buildChunk();
 
 	// Successfully initialized
@@ -142,16 +160,29 @@ bool MyDemoGame::Init()
 // Creates the vertex and index buffers for a single triangle
 void MyDemoGame::createEntities()
 {
+	resource_manager->getMesh("sphere", &sphere);
+	light_sphere01 = new LightEntity(sphere, light_mat);
+	//render_manager->addEntity(light_sphere01);
+	light_sphere01->setPosition(2.0f, 0.0f, 6.0f);
+	light_sphere01->setScale(0.2f);
+
+	GameEntity* testCast = light_sphere01;
+
+	std::string type = typeid(testCast).name();
+
+	light_sphere02 = new LightEntity(sphere, light_mat);
+	//render_manager->addEntity(light_sphere02);
+	light_sphere02->setPosition(-5.0f, 0.0f, 0.0f);
+	light_sphere02->setScale(0.2f);
+
 	resource_manager->getMesh("rail", &rail);
-	resource_manager->getMesh("rail", &rail2);
-	resource_manager->getMesh("rail", &rail3);
 	resource_manager->getMesh("racer", &racer);
 
 	e_rail = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail);
-	e_rail2 = new GameEntity(rail2, railTexture);
+	e_rail2 = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail2);
-	e_rail3 = new GameEntity(rail3, railTexture);
+	e_rail3 = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail3);
 
 	//position rails
@@ -162,22 +193,24 @@ void MyDemoGame::createEntities()
 	e_rail3->rotate(0.0f, 1.55f, -0.05f);
 	e_rail3->setScale(2.0f, 1.0f, 1.0f);
 
-	e_rail->setPosition(-3.0f, -2.0f, 12.0f);
+	e_rail->setPosition(-5.0f, -2.0f, 12.0f);
 	e_rail2->setPosition(0.5f, -2.0f, 12.0f);
-	e_rail3->setPosition(3.5f, -2.0f, 12.0f);
+	e_rail3->setPosition(6.0f, -2.0f, 12.0f);
 
 	//all racer stuff
 	e_racer = new GameEntity(racer, simpleMat_racer);
 	render_manager->addEntity(e_racer);
 	e_racer->setScale(0.6f, 0.6f, 0.6f);
-	e_racer->setPosition(1.34, -1, 7);
+	e_racer->setPosition(1.34f, -1.0f, 7.0f);
 	e_racer->rotate(0.0f, 0, 0.05f);
 }
 
 void MyDemoGame::createMaterials()
 {
-	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "RailTexture", "RailTexture");
+	resource_manager->loadMaterial("Light_Debug", "Light_Debug", "metal", "Light_Debug");
+	resource_manager->getMaterial("Light_Debug", &light_mat);
 
+	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "RailTexture", "RailTexture");
 	resource_manager->getMaterial("RailTexture", &railTexture);
 
 
@@ -198,6 +231,11 @@ void MyDemoGame::loadMeshes()
 	resource_manager->loadMesh("rail.obj", "rail3");
 
 	resource_manager->loadMesh("racer.obj", "racer");
+
+	//Model to check light position
+	resource_manager->loadMesh("sphere.obj", "sphere");
+
+
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -207,6 +245,10 @@ void MyDemoGame::LoadShadersAndInputLayout()
 {
 	resource_manager->loadVertexShader("VertexShader.cso", "Default_Diffuse");
 	resource_manager->loadPixelShader("PixelShader.cso", "Default_Diffuse");
+
+	//Shader to tell what color the lights are
+	resource_manager->loadVertexShader("v_shader_light_debug.cso", "Light_Debug");
+	resource_manager->loadPixelShader("p_shader_light_debug.cso", "Light_Debug");
 }
 
 void MyDemoGame::loadTextures()

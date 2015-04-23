@@ -7,6 +7,7 @@
 #include "GameEntity.h"
 #include "GameStates.h"
 #include "Light.h"
+#include "LightEntity.h"
 #include "Material.h"
 #include "Mesh.h"
 #include "Player.h"
@@ -64,14 +65,19 @@ private:
 
 	DirectionalLight d_light01;
 	DirectionalLight d_light02;
+	PointLight p_light01;
+	PointLight p_light02;
+
+	Material* light_mat;
+	Mesh* sphere;
+	LightEntity* light_sphere01;
+	LightEntity* light_sphere02;
 	bool whichCam;
 
 	Material* railTexture;
 	Material* simpleMat_racer;
 
 	Mesh* rail;
-	Mesh* rail2;
-	Mesh* rail3;
 	Mesh* racer;
 
 	GameEntity* e_rail;

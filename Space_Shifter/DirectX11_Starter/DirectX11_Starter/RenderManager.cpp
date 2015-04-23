@@ -16,6 +16,7 @@ RenderManager::~RenderManager()
 	entities.clear();
 	lights.clear();
 	d_lights.clear();
+	p_lights.clear();
 }
 
 /*
@@ -67,6 +68,11 @@ void RenderManager::addDirectionalLight(DirectionalLight* d_light)
 	d_lights.push_back(d_light);
 }
 
+void RenderManager::addPointLight(PointLight* p_light)
+{
+	p_lights.push_back(p_light);
+}
+
 Camera* RenderManager::getCamera(void)
 {
 	return this->camera;
@@ -91,6 +97,9 @@ void RenderManager::setBufferData(void)
 
 	b_lighting.d0 = *d_lights[0];
 	b_lighting.d1 = *d_lights[1];
+
+	b_lighting.p0 = *p_lights[0];
+	//b_lighting.p1 = *p_lights[1];
 	
 
 	Material* mat = entity->getMaterial();

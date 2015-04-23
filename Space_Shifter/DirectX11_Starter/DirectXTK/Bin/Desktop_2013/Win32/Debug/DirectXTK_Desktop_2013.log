@@ -1,9 +1,9 @@
-﻿Build started 4/15/2015 6:37:53 PM.
-     1>Project "C:\Users\MAGICUser\Documents\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectXTK\DirectXTK_Desktop_2013.vcxproj" on node 2 (Build target(s)).
+﻿Build started 4/15/2015 8:55:29 PM.
+     1>Project "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectXTK\DirectXTK_Desktop_2013.vcxproj" on node 2 (Build target(s)).
      1>Lib:
-         DirectXTK_Desktop_2013.vcxproj -> C:\Users\MAGICUser\Documents\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib
-     1>Done Building Project "C:\Users\MAGICUser\Documents\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectXTK\DirectXTK_Desktop_2013.vcxproj" (Build target(s)).
+         DirectXTK_Desktop_2013.vcxproj -> C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib
+     1>Done Building Project "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectXTK\DirectXTK_Desktop_2013.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.05
+Time Elapsed 00:00:01.70

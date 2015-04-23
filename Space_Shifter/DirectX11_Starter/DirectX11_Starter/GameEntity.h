@@ -28,7 +28,7 @@ public:
 	bool getIsMatrixDirty(void);
 	Material* getMaterial(void);
 
-	//virtual void setShaderVariables();
+	virtual void setShaderVariables();
 
 	void move(XMFLOAT3);
 	void move(float, float, float);
@@ -42,7 +42,7 @@ public:
 	void createWorldMatrix(void);
 	void draw(ID3D11Device*, ID3D11DeviceContext*);
 
-private:
+protected:
 	Mesh* mesh;
 	Material* material;
 	XMFLOAT4X4 worldMatrix;
