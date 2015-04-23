@@ -9,10 +9,10 @@ Obstacle::Obstacle(Mesh* mesh, Material* material)
 	active = false;
 
 	speed = 10.0f;
-	startPosZ = 20.0f;
-	finishPosZ = 0.0f;
+	startPosZ = 25.0f;
+	finishPosZ = -2.0f;
 
-	this->setPosition(0.0f, -0.75f, startPosZ);
+	this->setPosition(0.0f, -0.75f, -10.0f);
 }
 
 Obstacle::~Obstacle(void)

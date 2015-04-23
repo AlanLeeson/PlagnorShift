@@ -174,7 +174,7 @@ void MyDemoGame::createEntities()
 	render_manager->addEntity(player);
 
 	// Obstacles
-	obstacleManager = new ObstacleManager(1, m_obstacle, obstacleTexture);
+	obstacleManager = new ObstacleManager(5, m_obstacle, obstacleTexture);
 	vector<Obstacle*> obstacles = obstacleManager->GetObstacles();
 	for (int i = 0; i < obstacleManager->GetCount(); i++)
 	{

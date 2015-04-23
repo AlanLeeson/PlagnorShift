@@ -13,6 +13,10 @@ ObstacleManager::ObstacleManager(int numObstacles, Mesh* mesh, Material* materia
 
 ObstacleManager::~ObstacleManager()
 {
+	for (int i = 0; i < GetCount(); i++)
+	{
+		delete obstacles[i];
+	}
 }
 
 int ObstacleManager::GetCount(void)
@@ -27,12 +31,32 @@ vector<Obstacle*> ObstacleManager::GetObstacles(void)
 
 void ObstacleManager::Update(float dt)
 {
-	for (int i = 0; i < obstacles.size(); i++)
+	timeSinceLastSpawn += dt;
+
+	for (int i = 0; i < GetCount(); i++)
 	{
 		Obstacle* obstacle = obstacles[i];
-		obstacle->Update(dt);
 
-		if (obstacle->OutOfBounds())
-			obstacle->ResetLocation();
+		// Check if this obstacle is active
+		if (obstacle->Active())
+		{
+			obstacle->Update(dt);
+
+			// Check if the obstacle if it is out of bounds
+			if (obstacle->OutOfBounds())
+			{
+				obstacle->SetActive(false);
+			}
+		}
+		else
+		{
+			// Check if we can spawn this obstacle
+			if (timeSinceLastSpawn >= spawnCooldown)
+			{
+				obstacle->SetActive(true);
+				obstacle->ResetLocation();
+				timeSinceLastSpawn = 0.0f;
+			}
+		}
 	}
 }
