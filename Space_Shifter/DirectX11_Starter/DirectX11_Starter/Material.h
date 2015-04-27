@@ -17,6 +17,8 @@ struct LightingBuffer
 {
 	DirectionalLight d0;
 	DirectionalLight d1;
+	PointLight p0;
+	PointLight p1;
 };
 
 class Material

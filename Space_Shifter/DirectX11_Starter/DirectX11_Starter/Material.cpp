@@ -42,6 +42,16 @@ void Material::mapShaderData(TransformBuffer b_transform, LightingBuffer b_light
 		&b_lighting.d1,
 		sizeof(DirectionalLight));
 
+	pShader->SetData(
+		"plight_01",
+		&b_lighting.p0,
+		sizeof(PointLight));
+
+	pShader->SetData(
+		"plight_02",
+		&b_lighting.p1,
+		sizeof(PointLight));
+
 	pShader->SetShaderResourceView("diffuseTexture", srv);
 	pShader->SetSamplerState("basicSampler", sampler);
 }

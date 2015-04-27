@@ -20,6 +20,7 @@ public:
 	void addEntity(GameEntity*);
 	void addLight(Light*);
 	void addDirectionalLight(DirectionalLight*);
+	void addPointLight(PointLight*);
 
 	Camera* getCamera(void);
 	GameEntity* getEntity(void);
@@ -48,6 +49,7 @@ private:
 	std::vector<Light*> lights;
 	//Temporary vector until different lights can be parsed out of one vector
 	std::vector<DirectionalLight*> d_lights;
+	std::vector<PointLight*> p_lights;
 
 	void setBufferData(void);
 };

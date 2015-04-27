@@ -135,6 +135,18 @@ bool MyDemoGame::Init()
 	d_light02.Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 	render_manager->addDirectionalLight(&d_light02);
 
+	p_light01.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	p_light01.DiffuseColor = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	p_light01.Position = XMFLOAT3(2.0f, 0.0f, 6.0f);
+	p_light01.Distance = 5.0f;
+	render_manager->addPointLight(&p_light01);
+
+	p_light02.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	p_light02.DiffuseColor = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	p_light02.Position = XMFLOAT3(-5.0f, 0.0f, 0.0f);
+	p_light02.Distance = 5.0f;
+	//render_manager->addPointLight(&p_light02);
+
 	chunk_manager->buildChunk();
 
 	// Successfully initialized
@@ -145,16 +157,14 @@ bool MyDemoGame::Init()
 void MyDemoGame::createEntities()
 {
 	resource_manager->getMesh("rail", &rail);
-	resource_manager->getMesh("rail", &rail2);
-	resource_manager->getMesh("rail", &rail3);
 	resource_manager->getMesh("racer", &racer);
 	resource_manager->getMesh("obstacle", &m_obstacle);
 
 	e_rail = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail);
-	e_rail2 = new GameEntity(rail2, railTexture);
+	e_rail2 = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail2);
-	e_rail3 = new GameEntity(rail3, railTexture);
+	e_rail3 = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail3);
 
 	//position rails

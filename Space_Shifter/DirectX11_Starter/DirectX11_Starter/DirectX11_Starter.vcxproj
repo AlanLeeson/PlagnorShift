@@ -81,6 +81,8 @@
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="DirectXGame.cpp" />
     <ClCompile Include="GameTimer.cpp" />
+    <ClCompile Include="Obstacle.cpp" />
+    <ClCompile Include="ObstacleManager.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -99,6 +101,8 @@
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="DirectXGame.h" />
     <ClInclude Include="GameTimer.h" />
+    <ClInclude Include="Obstacle.h" />
+    <ClInclude Include="ObstacleManager.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="ResourceManager.h" />

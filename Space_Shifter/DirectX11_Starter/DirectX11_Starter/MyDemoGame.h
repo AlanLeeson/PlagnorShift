@@ -66,6 +66,8 @@ private:
 
 	DirectionalLight d_light01;
 	DirectionalLight d_light02;
+	PointLight p_light01;
+	PointLight p_light02;
 	bool whichCam;
 
 	Material* railTexture;
@@ -73,8 +75,6 @@ private:
 	Material* obstacleTexture;
 
 	Mesh* rail;
-	Mesh* rail2;
-	Mesh* rail3;
 	Mesh* racer;
 
 	GameEntity* e_rail;
