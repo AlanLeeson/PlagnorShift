@@ -5,9 +5,10 @@
 
 using namespace DirectX;
 
+//BE CAREFUL OF PACKING
 struct Vertex
 {
 	XMFLOAT3 Position;
-	XMFLOAT3 Normal;
 	XMFLOAT2 UV;
+	XMFLOAT3 Normal;
 };

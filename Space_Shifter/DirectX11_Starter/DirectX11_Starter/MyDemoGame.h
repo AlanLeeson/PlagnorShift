@@ -74,6 +74,15 @@ private:
 	Material* simpleMat_racer;
 	Material* obstacleTexture;
 
+	ID3D11Texture2D* renderTexture;
+	ID3D11RenderTargetView* rtView;
+	ID3D11ShaderResourceView* rtSRV;
+
+	Mesh* fullscreenQuad;
+	ID3D11SamplerState* sampler;
+	SimpleVertexShader* quadVS;
+	SimplePixelShader* quadPS;
+
 	Mesh* rail;
 	Mesh* racer;
 
