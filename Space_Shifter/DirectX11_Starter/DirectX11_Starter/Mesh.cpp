@@ -20,7 +20,7 @@ Mesh::Mesh(Vertex* verts, int numVerts, unsigned int* indices, int numIndices, I
 
 	D3D11_BUFFER_DESC ibd;
 	ibd.Usage					= D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth				= sizeof(UINT) * numIndices;
+	ibd.ByteWidth				= sizeof(unsigned int) * numIndices;
 	ibd.BindFlags				= D3D11_BIND_INDEX_BUFFER;
 	ibd.CPUAccessFlags			= 0;
 	ibd.MiscFlags				= 0;

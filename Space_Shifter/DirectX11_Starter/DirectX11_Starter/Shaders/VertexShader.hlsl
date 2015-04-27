@@ -14,8 +14,8 @@ cbuffer perModel : register( b0 )
 struct VertexShaderInput
 { 
 	float3 position		: POSITION;
-	float3 normal		: NORMAL;
 	float2 uv			: TEXCOORD0;
+	float3 normal		: NORMAL;
 };
 
 // Defines the output data of our vertex shader

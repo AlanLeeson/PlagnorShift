@@ -70,6 +70,14 @@ MyDemoGame::~MyDemoGame()
 	delete gameCamera;
 	camera = nullptr;
 
+	sampler->Release();
+	renderTargetView->Release();
+	rtSRV->Release();
+	rtView->Release();
+
+	delete fullscreenQuad;
+	fullscreenQuad = nullptr;
+
 	delete e_rail;
 	e_rail = nullptr;
 	delete e_rail2;
@@ -156,6 +164,26 @@ bool MyDemoGame::Init()
 // Creates the vertex and index buffers for a single triangle
 void MyDemoGame::createEntities()
 {
+	Vertex quad[4];
+	quad[0].Position = XMFLOAT3(-1, +1, 0);
+	quad[1].Position = XMFLOAT3(-1, -1, 0);
+	quad[2].Position = XMFLOAT3(+1, -1, 0);
+	quad[3].Position = XMFLOAT3(+1, +1, 0);
+	quad[0].UV = XMFLOAT2(0, 0);
+	quad[1].UV = XMFLOAT2(0, 1);
+	quad[2].UV = XMFLOAT2(1, 1);
+	quad[3].UV = XMFLOAT2(1, 0);
+
+	unsigned int indices[6];
+	indices[0] = 0;
+	indices[1] = 2;
+	indices[2] = 1;
+	indices[3] = 0;
+	indices[4] = 3;
+	indices[5] = 2;
+
+	fullscreenQuad = new Mesh(quad, 4, indices, 6, device);
+
 	resource_manager->getMesh("rail", &rail);
 	resource_manager->getMesh("racer", &racer);
 	resource_manager->getMesh("obstacle", &m_obstacle);
@@ -227,11 +255,18 @@ void MyDemoGame::LoadShadersAndInputLayout()
 {
 	resource_manager->loadVertexShader("VertexShader.cso", "Default_Diffuse");
 	resource_manager->loadPixelShader("PixelShader.cso", "Default_Diffuse");
+
+	resource_manager->loadVertexShader("QuadVS.cso", "FullScreenQuad");
+	resource_manager->loadPixelShader("QuadPS.cso", "FullScreenQuad");
+
+	resource_manager->getVertexShader("FullScreenQuad", &quadVS);
+	resource_manager->getPixelShader("FullScreenQuad", &quadPS);
 }
 
 void MyDemoGame::loadTextures()
 {
 	D3D11_SAMPLER_DESC sd;
+	ZeroMemory(&sd, sizeof(D3D11_SAMPLER_DESC));
 	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -243,10 +278,43 @@ void MyDemoGame::loadTextures()
 	sd.MinLOD = 0;
 	sd.MipLODBias = 0;
 
+	HR(device->CreateSamplerState(&sd, &sampler));
+
 	resource_manager->loadTexture("WoodFine0031_19_S.jpg", sd, "wood");
 	resource_manager->loadTexture("MetalBare0144_1_S.jpg", sd, "metal");
 	resource_manager->loadTexture("RailTexture.png", sd, "RailTexture");
 	resource_manager->loadTexture("plagnortex.png", sd, "racer");
+
+	//Render target setup
+	D3D11_TEXTURE2D_DESC rtDesc;
+	rtDesc.Width = windowWidth;
+	rtDesc.Height = windowHeight;
+	rtDesc.ArraySize = 1;
+	rtDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	rtDesc.CPUAccessFlags = 0;
+	rtDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	rtDesc.MipLevels = 1;
+	rtDesc.MiscFlags = 0;
+	rtDesc.SampleDesc.Count = 1;
+	rtDesc.SampleDesc.Quality = 0;
+	rtDesc.Usage = D3D11_USAGE_DEFAULT;
+	device->CreateTexture2D(&rtDesc, 0, &renderTexture);
+
+	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+	ZeroMemory(&rtvDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+	rtvDesc.Format = rtDesc.Format;
+	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	rtvDesc.Texture2D.MipSlice = 0;
+	device->CreateRenderTargetView(renderTexture, &rtvDesc, &rtView);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	srvDesc.Format = rtDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	device->CreateShaderResourceView(renderTexture, &srvDesc, &rtSRV);
+
 }
 
 // Initializes the matrices necessary to represent our 3D camera
@@ -303,10 +371,15 @@ void MyDemoGame::DrawScene()
 	// Background color (Cornflower Blue in this case) for clearing
 	const float color[4] = {0.4f, 0.6f, 0.75f, 0.0f};
 
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//Render to texture
+	deviceContext->OMSetRenderTargets(1, &rtView, depthStencilView);
+
 	// Clear the buffer (erases what's on the screen)
 	//  - Do this once per frame
 	//  - At the beginning (before drawing anything)
-	deviceContext->ClearRenderTargetView(renderTargetView, color);
+	deviceContext->ClearRenderTargetView(rtView, color);
 	deviceContext->ClearDepthStencilView(
 		depthStencilView, 
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
@@ -318,7 +391,6 @@ void MyDemoGame::DrawScene()
 	//    input layout (different kinds of vertices) or the topology (different primitives)
 	//    between draws
 	deviceContext->IASetInputLayout(inputLayout);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//Renders all game entities with a specific camera
 	if (whichCam){
@@ -327,6 +399,34 @@ void MyDemoGame::DrawScene()
 	else{
 		render_manager->renderAll(gameCamera);
 	}
+
+	// Go back to the regular "back buffer"
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
+	deviceContext->ClearRenderTargetView(renderTargetView, color);
+
+	quadVS->SetShader();
+	quadPS->SetSamplerState("basicSampler", sampler);
+	quadPS->SetShaderResourceView("diffuseTexture", rtSRV);
+	quadPS->SetInt("blurAmount", 0);
+	quadPS->SetFloat2("pixelSize", XMFLOAT2(1.0f / windowWidth, 1.0f / windowHeight));
+	quadPS->SetShader();
+
+	// Set data
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	ID3D11Buffer* vb = fullscreenQuad->getVertexBuffer();
+	deviceContext->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+	deviceContext->IASetIndexBuffer(fullscreenQuad->getIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+	// Draw
+	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
+
+	// Stick with the back buffer, but re-enable the depth buffer from earlier
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+	// Unset the shader resource
+	ID3D11ShaderResourceView* unset[1] = { 0 };
+	deviceContext->PSSetShaderResources(0, 1, unset);
 
 	// Present the buffer
 	//  - Puts the stuff on the screen
