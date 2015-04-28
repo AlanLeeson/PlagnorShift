@@ -9,7 +9,7 @@ Player::Player(Mesh* mesh, Material* material)
 	animateMovement = false;
 	horizontalSpeed = 10.0f;
 
-	railPosX = { -3.5f, 0.0f, 3.5f };
+	railPosX = { -2.0f, 1.3f, 4.5f };
 
 	this->setScale(0.6f, 0.6f, 0.6f);
 	this->setPosition(railPosX[this->currentRail], -0.75f, 6.0f);

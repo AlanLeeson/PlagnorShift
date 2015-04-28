@@ -162,13 +162,13 @@ bool MyDemoGame::Init()
 	p_light01.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	p_light01.DiffuseColor = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	p_light01.Position = XMFLOAT3(2.0f, 0.0f, 6.0f);
-	p_light01.Distance = 5.0f;
+	p_light01.Distance = 2.0f;
 	render_manager->addPointLight(&p_light01);
 
-	p_light02.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	p_light02.DiffuseColor = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	p_light02.Position = XMFLOAT3(-5.0f, 0.0f, 0.0f);
-	p_light02.Distance = 5.0f;
+	//p_light02.AmbientColor = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	//p_light02.DiffuseColor = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	//p_light02.Position = XMFLOAT3(-5.0f, 0.0f, 0.0f);
+	//p_light02.Distance = 5.0f;
 	//render_manager->addPointLight(&p_light02);
 
 	chunk_manager->buildChunk();
@@ -260,7 +260,7 @@ void MyDemoGame::loadMeshes()
 	resource_manager->loadMesh("rail.obj", "rail2");
 	resource_manager->loadMesh("rail.obj", "rail3");
 
-	resource_manager->loadMesh("cube.obj", "racer");
+	resource_manager->loadMesh("racer.obj", "racer");
 	resource_manager->loadMesh("cube.obj", "obstacle");
 }
 
@@ -400,6 +400,7 @@ void MyDemoGame::UpdateScene(float dt)
 	}
 
 	player->Update(dt);
+    p_light01.Position = player->getPosition();
 	obstacleManager->Update(dt);
 	
 }
