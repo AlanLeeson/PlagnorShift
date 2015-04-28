@@ -203,6 +203,7 @@ void MyDemoGame::createEntities()
 	resource_manager->getMesh("rail", &rail);
 	resource_manager->getMesh("racer", &racer);
 	resource_manager->getMesh("obstacle", &m_obstacle);
+    resource_manager->getMesh("powerUp", &m_powerUp);
 
 	e_rail = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail);
@@ -234,6 +235,10 @@ void MyDemoGame::createEntities()
 	{
 		render_manager->addEntity(obstacles[i]);
 	}
+
+    // PowerUps
+    PowerUp* powerUp = new PowerUp(m_powerUp, powerUpTexture);
+    render_manager->addEntity(powerUp);
 }
 
 void MyDemoGame::createMaterials()
@@ -246,6 +251,9 @@ void MyDemoGame::createMaterials()
 
 	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "wood", "obstacle");
 	resource_manager->getMaterial("obstacle", &obstacleTexture);
+
+    resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "metal", "powerUp");
+    resource_manager->getMaterial("powerUp", &powerUpTexture);
 }
 
 void MyDemoGame::loadResources()
@@ -262,6 +270,7 @@ void MyDemoGame::loadMeshes()
 
 	resource_manager->loadMesh("racer.obj", "racer");
 	resource_manager->loadMesh("cube.obj", "obstacle");
+    resource_manager->loadMesh("sphere.obj", "powerUp");
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
