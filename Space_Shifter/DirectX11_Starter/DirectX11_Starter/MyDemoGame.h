@@ -83,6 +83,28 @@ private:
 	SimpleVertexShader* quadVS;
 	SimplePixelShader* quadPS;
 
+	ID3D11Texture2D* bloomTexture_highlight;
+	ID3D11RenderTargetView* rtv_highlight;
+	ID3D11ShaderResourceView* rtsrv_highlight;
+	SimplePixelShader* bloom_highlightPS;
+
+	ID3D11Texture2D* bloomTexture_gaussH;
+	ID3D11RenderTargetView* rtv_gaussH;
+	ID3D11ShaderResourceView* rtsrv_gaussH;
+	SimplePixelShader* bloom_gauss_hPS;
+	SimplePixelShader* bloom_gauss_vPS;
+
+	ID3D11Texture2D* bloomTexture_gaussV;
+	ID3D11RenderTargetView* rtv_gaussV;
+	ID3D11ShaderResourceView* rtsrv_gaussV;
+
+	ID3D11Texture2D* bloomTexture_original;
+	ID3D11RenderTargetView* rtv_original;
+	ID3D11ShaderResourceView* rtsrv_original;
+
+	SimpleVertexShader* bloomVS;
+	SimplePixelShader* bloomPS;
+
 	Mesh* rail;
 	Mesh* racer;
 
