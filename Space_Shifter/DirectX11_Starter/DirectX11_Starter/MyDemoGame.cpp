@@ -75,6 +75,22 @@ MyDemoGame::~MyDemoGame()
 	rtSRV->Release();
 	rtView->Release();
 
+	bloomTexture_original->Release();
+	rtv_original->Release();
+	rtsrv_original->Release();
+
+	bloomTexture_highlight->Release();
+	rtv_highlight->Release();
+	rtsrv_highlight->Release();
+
+	bloomTexture_gaussH->Release();
+	rtv_gaussH->Release();
+	rtsrv_gaussH->Release();
+
+	bloomTexture_gaussV->Release();
+	rtv_gaussV->Release();
+	rtsrv_gaussV->Release();
+
 	delete fullscreenQuad;
 	fullscreenQuad = nullptr;
 
@@ -259,8 +275,16 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	resource_manager->loadVertexShader("QuadVS.cso", "FullScreenQuad");
 	resource_manager->loadPixelShader("QuadPS.cso", "FullScreenQuad");
 
+	resource_manager->loadPixelShader("Bloom_highlight_PS.cso", "Bloom_Highlight");
+	resource_manager->loadPixelShader("Gauss_blur_horizontal_PS.cso", "Gauss_Horizontal");
+	resource_manager->loadPixelShader("Gauss_blur_vertical_PS.cso", "Gauss_Vertical");
+
 	resource_manager->getVertexShader("FullScreenQuad", &quadVS);
 	resource_manager->getPixelShader("FullScreenQuad", &quadPS);
+
+	resource_manager->getPixelShader("Bloom_Highlight", &bloom_highlightPS);
+	resource_manager->getPixelShader("Gauss_Horizontal", &bloom_gauss_hPS);
+	resource_manager->getPixelShader("Gauss_Vertical", &bloom_gauss_vPS);
 }
 
 void MyDemoGame::loadTextures()
@@ -298,14 +322,24 @@ void MyDemoGame::loadTextures()
 	rtDesc.SampleDesc.Count = 1;
 	rtDesc.SampleDesc.Quality = 0;
 	rtDesc.Usage = D3D11_USAGE_DEFAULT;
+
 	device->CreateTexture2D(&rtDesc, 0, &renderTexture);
+	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_original);
+	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_highlight);
+	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_gaussH);
+	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_gaussV);
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
 	ZeroMemory(&rtvDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
 	rtvDesc.Format = rtDesc.Format;
 	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	rtvDesc.Texture2D.MipSlice = 0;
+
 	device->CreateRenderTargetView(renderTexture, &rtvDesc, &rtView);
+	device->CreateRenderTargetView(bloomTexture_original, &rtvDesc, &rtv_original);
+	device->CreateRenderTargetView(bloomTexture_highlight, &rtvDesc, &rtv_highlight);
+	device->CreateRenderTargetView(bloomTexture_gaussH, &rtvDesc, &rtv_gaussH);
+	device->CreateRenderTargetView(bloomTexture_gaussV, &rtvDesc, &rtv_gaussV);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -313,7 +347,12 @@ void MyDemoGame::loadTextures()
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Texture2D.MostDetailedMip = 0;
+
 	device->CreateShaderResourceView(renderTexture, &srvDesc, &rtSRV);
+	device->CreateShaderResourceView(bloomTexture_original, &srvDesc, &rtsrv_original);
+	device->CreateShaderResourceView(bloomTexture_highlight, &srvDesc, &rtsrv_highlight);
+	device->CreateShaderResourceView(bloomTexture_gaussH, &srvDesc, &rtsrv_gaussH);
+	device->CreateShaderResourceView(bloomTexture_gaussV, &srvDesc, &rtsrv_gaussV);
 
 }
 
@@ -369,28 +408,28 @@ void MyDemoGame::UpdateScene(float dt)
 void MyDemoGame::DrawScene()
 {
 	// Background color (Cornflower Blue in this case) for clearing
-	const float color[4] = {0.4f, 0.6f, 0.75f, 0.0f};
-
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	//Render to texture
-	deviceContext->OMSetRenderTargets(1, &rtView, depthStencilView);
-
-	// Clear the buffer (erases what's on the screen)
-	//  - Do this once per frame
-	//  - At the beginning (before drawing anything)
-	deviceContext->ClearRenderTargetView(rtView, color);
-	deviceContext->ClearDepthStencilView(
-		depthStencilView, 
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
-		1.0f,
-		0);
+	const float color[4] = {0.2f, 0.2f, 0.4f, 0.0f};
+	const float blurColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	// Set up the input assembler
 	//  - These technically don't need to be set every frame, unless you're changing the
 	//    input layout (different kinds of vertices) or the topology (different primitives)
 	//    between draws
 	deviceContext->IASetInputLayout(inputLayout);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	//Render to texture
+	deviceContext->OMSetRenderTargets(1, &rtv_original, depthStencilView);
+	deviceContext->ClearRenderTargetView(rtv_original, color);
+
+	// Clear the buffer (erases what's on the screen)
+	//  - Do this once per frame
+	//  - At the beginning (before drawing anything)
+	deviceContext->ClearDepthStencilView(
+		depthStencilView, 
+		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
+		1.0f,
+		0);
 
 	//Renders all game entities with a specific camera
 	if (whichCam){
@@ -400,16 +439,7 @@ void MyDemoGame::DrawScene()
 		render_manager->renderAll(gameCamera);
 	}
 
-	// Go back to the regular "back buffer"
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
-	deviceContext->ClearRenderTargetView(renderTargetView, color);
-
 	quadVS->SetShader();
-	quadPS->SetSamplerState("basicSampler", sampler);
-	quadPS->SetShaderResourceView("diffuseTexture", rtSRV);
-	quadPS->SetInt("blurAmount", 0);
-	quadPS->SetFloat2("pixelSize", XMFLOAT2(1.0f / windowWidth, 1.0f / windowHeight));
-	quadPS->SetShader();
 
 	// Set data
 	UINT stride = sizeof(Vertex);
@@ -418,6 +448,53 @@ void MyDemoGame::DrawScene()
 	deviceContext->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
 	deviceContext->IASetIndexBuffer(fullscreenQuad->getIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
+	//Get the highlights for the bloom shader
+	deviceContext->OMSetRenderTargets(1, &rtv_highlight, 0);
+	deviceContext->ClearRenderTargetView(rtv_highlight, blurColor);
+
+	bloom_highlightPS->SetFloat("threshold", 0.5f);
+	bloom_highlightPS->SetSamplerState("basicSampler", sampler);
+	bloom_highlightPS->SetShaderResourceView("sceneTexture", rtsrv_original);
+	bloom_highlightPS->SetShader();
+
+	// Draw
+	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
+
+	//Blur highlights horizontally
+	deviceContext->OMSetRenderTargets(1, &rtv_gaussH, 0);
+	deviceContext->ClearRenderTargetView(rtv_gaussH, blurColor);
+
+	bloom_gauss_hPS->SetFloat2("pixelSize", XMFLOAT2(1.0f / windowWidth, 1.0f / windowHeight));
+	bloom_gauss_hPS->SetSamplerState("basicSampler", sampler);
+	bloom_gauss_hPS->SetShaderResourceView("diffuseTexture", rtsrv_highlight);
+	bloom_gauss_hPS->SetShader();
+
+	// Draw
+	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
+
+	//Blur highlights vertically
+	deviceContext->OMSetRenderTargets(1, &rtv_gaussV, 0);
+	deviceContext->ClearRenderTargetView(rtv_gaussV, blurColor);
+
+	bloom_gauss_vPS->SetFloat2("pixelSize", XMFLOAT2(1.0f / windowWidth, 1.0f / windowHeight));
+	bloom_gauss_vPS->SetSamplerState("basicSampler", sampler);
+	bloom_gauss_vPS->SetShaderResourceView("diffuseTexture", rtsrv_gaussH);
+	bloom_gauss_vPS->SetShader();
+
+	// Draw
+	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
+
+	// Go back to the regular "back buffer"
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
+	deviceContext->ClearRenderTargetView(renderTargetView, color);
+
+	quadPS->SetSamplerState("basicSampler", sampler);
+	quadPS->SetShaderResourceView("diffuseTexture", rtsrv_gaussV);
+	quadPS->SetShaderResourceView("sceneTexture", rtsrv_original);
+	quadPS->SetInt("blurAmount", 0);
+	quadPS->SetFloat2("pixelSize", XMFLOAT2(1.0f / windowWidth, 1.0f / windowHeight));
+	quadPS->SetShader();
+
 	// Draw
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
 
@@ -425,8 +502,9 @@ void MyDemoGame::DrawScene()
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 	// Unset the shader resource
-	ID3D11ShaderResourceView* unset[1] = { 0 };
-	deviceContext->PSSetShaderResources(0, 1, unset);
+	ID3D11ShaderResourceView* unset[2] = { 0, 0 };
+	deviceContext->PSSetShaderResources(0, 2, unset);
+	deviceContext->OMSetRenderTargets(0, 0, 0);
 
 	// Present the buffer
 	//  - Puts the stuff on the screen

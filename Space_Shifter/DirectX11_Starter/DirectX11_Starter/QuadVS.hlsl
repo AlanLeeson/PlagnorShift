@@ -5,7 +5,6 @@ struct VertexShaderInput
 {
 	float3 position		: POSITION;
 	float2 uv			: TEXCOORD;
-	float3 normal		: NORMAL;
 };
 
 // Defines the output data of our vertex shader
