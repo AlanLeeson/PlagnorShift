@@ -104,6 +104,9 @@ MyDemoGame::~MyDemoGame()
 	delete player;
 	player = nullptr;
 
+	delete m_powerUp;
+	m_powerUp = nullptr;
+
 	delete obstacleManager;
 	obstacleManager = nullptr;
 
@@ -237,8 +240,10 @@ void MyDemoGame::createEntities()
 	}
 
     // PowerUps
-    PowerUp* powerUp = new PowerUp(m_powerUp, powerUpTexture);
+    powerUp = new PowerUp(m_powerUp, powerUpTexture);
     render_manager->addEntity(powerUp);
+	powerUp->setPosition(-3.4f, -1.0f, 5.0f);
+	powerUp->setScale(0.12f, 0.12f, 0.12f);
 }
 
 void MyDemoGame::createMaterials()
@@ -270,7 +275,7 @@ void MyDemoGame::loadMeshes()
 
 	resource_manager->loadMesh("racer.obj", "racer");
 	resource_manager->loadMesh("cube.obj", "obstacle");
-    resource_manager->loadMesh("sphere.obj", "powerUp");
+    resource_manager->loadMesh("rocket.obj", "powerUp");
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the

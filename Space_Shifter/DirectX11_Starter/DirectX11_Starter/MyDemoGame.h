@@ -18,6 +18,7 @@
 #include "WICTextureLoader.h"
 #include "Obstacle.h"
 #include "ObstacleManager.h"
+#include "PowerUp.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -73,6 +74,7 @@ private:
 	Material* railTexture;
 	Material* simpleMat_racer;
 	Material* obstacleTexture;
+	Material* powerUpTexture;
 
 	ID3D11Texture2D* renderTexture;
 	ID3D11RenderTargetView* rtView;
@@ -107,6 +109,7 @@ private:
 
 	Mesh* rail;
 	Mesh* racer;
+	Mesh* m_powerUp;
 
 	GameEntity* e_rail;
 	GameEntity* e_rail2;
@@ -126,6 +129,7 @@ private:
 	POINT prevMousePos;
 
 	Player* player;
+	PowerUp* powerUp;
 
 	Mesh* m_obstacle;
 	ObstacleManager* obstacleManager;
