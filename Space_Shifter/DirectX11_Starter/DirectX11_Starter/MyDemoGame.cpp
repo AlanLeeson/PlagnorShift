@@ -232,18 +232,16 @@ void MyDemoGame::createEntities()
 	render_manager->addEntity(player);
 
 	// Obstacles
-	obstacleManager = new ObstacleManager(5, m_obstacle, obstacleTexture);
+	obstacleManager = new ObstacleManager(4, m_obstacle, obstacleTexture);
+	obstacleManager->pushPowerUp(m_powerUp, powerUpTexture);
 	vector<Obstacle*> obstacles = obstacleManager->GetObstacles();
+	//powerUp = new PowerUp(m_powerUp, powerUpTexture);
+	//obstacles.push_back(powerUp);
+
 	for (int i = 0; i < obstacleManager->GetCount(); i++)
 	{
 		render_manager->addEntity(obstacles[i]);
 	}
-
-    // PowerUps
-    powerUp = new PowerUp(m_powerUp, powerUpTexture);
-    render_manager->addEntity(powerUp);
-	powerUp->setPosition(-3.4f, -1.0f, 5.0f);
-	powerUp->setScale(0.12f, 0.12f, 0.12f);
 }
 
 void MyDemoGame::createMaterials()

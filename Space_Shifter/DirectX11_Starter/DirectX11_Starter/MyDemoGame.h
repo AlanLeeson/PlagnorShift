@@ -129,7 +129,7 @@ private:
 	POINT prevMousePos;
 
 	Player* player;
-	PowerUp* powerUp;
+	Obstacle* powerUp;
 
 	Mesh* m_obstacle;
 	ObstacleManager* obstacleManager;

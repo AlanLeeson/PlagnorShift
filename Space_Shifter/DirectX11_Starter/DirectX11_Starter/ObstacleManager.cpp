@@ -24,6 +24,10 @@ int ObstacleManager::GetCount(void)
 	return obstacles.size();
 }
 
+void ObstacleManager::pushPowerUp(Mesh * mesh, Material * material){
+	obstacles.push_back(new PowerUp(mesh, material));
+}
+
 vector<Obstacle*> ObstacleManager::GetObstacles(void)
 {
 	return obstacles;
@@ -51,12 +55,15 @@ void ObstacleManager::Update(float dt)
 		else
 		{
 			// Check if we can spawn this obstacle
-			if (timeSinceLastSpawn >= spawnCooldown)
+			if (timeSinceLastSpawn >= spawnCooldown && rand()%GetCount() ==0)
 			{
 				obstacle->SetActive(true);
 				obstacle->ResetLocation();
-				timeSinceLastSpawn = 0.0f;
 			}
 		}
+	}
+	if (timeSinceLastSpawn >= spawnCooldown)
+	{
+		timeSinceLastSpawn = 0.0f;
 	}
 }
