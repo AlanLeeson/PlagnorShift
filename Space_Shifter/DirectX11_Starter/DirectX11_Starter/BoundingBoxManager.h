@@ -2,7 +2,7 @@
 
 #include <DirectXMath.h>
 #include "DirectXGame.h"
-#include "BoundingBoxClass.h"
+#include "BoundingBox.h"
 #include <vector>
 
 using namespace std;
@@ -10,31 +10,33 @@ using namespace DirectX;
 
 class BoundingBoxManager
 {
-	int numBoxes;
-	vector<BoundingBoxClass*> boundingBox;
-	vector<string> colliding;
+	//int numBoxes;
+	//vector<string> colliding;
 
 public:
-	static BoundingBoxManager* GetInstance();
-	int GetNumberOfBoxes(void);
+	static BoundingBoxManager& getInstance(void);
+	//int GetNumberOfBoxes(void);
 
-	void AddBox(string instanceName);
-	void RemoveBox(string instanceName = "ALL");
+	//void AddBox(string instanceName);
+	//void RemoveBox(string instanceName = "ALL");
 
-	void SetModelMatrix(XMFLOAT4X4 modelMatrix, string instanceName = "ALL");
+	//void SetModelMatrix(XMFLOAT4X4 modelMatrix, string instanceName = "ALL");
 	void Update(void);
+	bool checkCollision(BoundingBox*, BoundingBox*);
+	vector<BoundingBox*> boundingBoxes;
 
 private:
-	BoundingBoxManager(void);
-	BoundingBoxManager(BoundingBoxManager const& other);
-	BoundingBoxManager& operator=(BoundingBoxManager const& other);
-	~BoundingBoxManager(void);
+	BoundingBoxManager();
+	BoundingBoxManager(BoundingBoxManager const&) = delete;
+	~BoundingBoxManager();
 
-	void Init(void);
+	//void operator=(BoundingBoxManager const&) = delete;
+
+	//void Init(void);
 	
-	static BoundingBoxManager* instance;
-	void CollisionCheck(void);
-	void CollisionResponse(void);
-
-	bool CheckForNameInList(string name);
+	//static BoundingBoxManager* instance;
+	//void CollisionCheck(void);
+	//void CollisionResponse(void);
+	//
+	//bool CheckForNameInList(string name);
 };
