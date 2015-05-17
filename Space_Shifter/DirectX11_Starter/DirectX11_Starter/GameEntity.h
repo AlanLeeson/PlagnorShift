@@ -5,7 +5,7 @@
 #include "Mesh.h"
 #include "SimpleShader.h"
 #include "VSConstantBufferLayout.h"
-#include "BoundingBoxClass.h"
+#include "BoundingBox.h"
 
 class GameEntity
 {
@@ -43,6 +43,7 @@ public:
 	void createWorldMatrix(void);
 	void draw(ID3D11Device*, ID3D11DeviceContext*);
 
+	BoundingBox* boundingBox;
 private:
 	Mesh* mesh;
 	Material* material;
@@ -53,6 +54,5 @@ private:
 
 	bool isMatrixDirty;
 
-	BoundingBoxClass* boundingBox;
 };
 

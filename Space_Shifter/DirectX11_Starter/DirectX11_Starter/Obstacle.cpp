@@ -13,6 +13,8 @@ Obstacle::Obstacle(Mesh* mesh, Material* material)
 	finishPosZ = -2.0f;
 
 	this->setPosition(0.0f, -0.75f, -10.0f);
+	XMFLOAT3 size = XMFLOAT3(1, 1, 1);
+	this->boundingBox = new BoundingBox("obstacle", this->getPosition(), size);
 }
 
 Obstacle::~Obstacle(void)

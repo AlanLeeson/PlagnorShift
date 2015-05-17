@@ -26,12 +26,14 @@ GameEntity::~GameEntity()
 void GameEntity::setPosition(XMFLOAT3 newPos)
 {
 	this->_position = newPos;
+	if(boundingBox)boundingBox->position = newPos;
 	isMatrixDirty = true;
 }
 
 void GameEntity::setPosition(float x, float y, float z)
 {
 	this->_position = XMFLOAT3(x, y, z);
+	if (boundingBox)boundingBox->position = XMFLOAT3(x, y, z);
 	isMatrixDirty = true;
 }
 
@@ -109,6 +111,7 @@ void GameEntity::move(XMFLOAT3 amount)
 	XMVECTOR v_vector = XMLoadFloat3(&amount);
 	v_pos = XMVectorAdd(v_pos, v_vector);
 	XMStoreFloat3(&_position, v_pos);
+	if (boundingBox)XMStoreFloat3(&boundingBox->position, v_pos);
 	isMatrixDirty = true;
 }
 

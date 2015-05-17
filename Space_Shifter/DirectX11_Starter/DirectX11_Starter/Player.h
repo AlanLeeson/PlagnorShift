@@ -2,6 +2,7 @@
 #include "DirectXGame.h"
 #include "GameEntity.h"
 #include <vector>
+#include "BoundingBox.h"
 
 class Player :
 	public GameEntity
@@ -19,12 +20,13 @@ public:
 
 private:
 	vector<float> railPosX;
-
+	
 	Rail currentRail;
 	Rail targetRail;
 
 	bool animateMovement;
 
 	float horizontalSpeed;
+
 };
 

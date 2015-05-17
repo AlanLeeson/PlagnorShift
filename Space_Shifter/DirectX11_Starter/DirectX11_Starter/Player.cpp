@@ -14,16 +14,17 @@ Player::Player(Mesh* mesh, Material* material)
 	this->setScale(0.6f, 0.6f, 0.6f);
 	this->setPosition(railPosX[this->currentRail], -0.75f, 6.0f);
 	this->rotate(0.0f, 0.0f, 0.05f);
+
+	this->boundingBox = new BoundingBox("player", this->getPosition(), XMFLOAT3(1, 1, 1));
+
 }
-
-
 Player::~Player()
 {
 }
 
 
 void Player::move(int direction)
-{
+{ 
 	if (direction == 0  || animateMovement)
 		return;
 

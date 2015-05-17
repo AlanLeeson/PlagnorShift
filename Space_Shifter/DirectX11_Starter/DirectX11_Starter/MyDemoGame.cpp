@@ -139,6 +139,7 @@ bool MyDemoGame::Init()
 
 	chunk_manager = new ChunkManager();
 
+	bounding_box_manager = &BoundingBoxManager::getInstance();
 	// Create the necessary DirectX buffers to draw something
 	loadResources();
 	
@@ -230,7 +231,7 @@ void MyDemoGame::createEntities()
 	// Player
 	player = new Player(racer, simpleMat_racer);
 	render_manager->addEntity(player);
-
+	//bounding_box_manager->boundingBoxes.push_back(player->boundingBox);
 	// Obstacles
 	obstacleManager = new ObstacleManager(4, m_obstacle, obstacleTexture);
 	obstacleManager->pushPowerUp(m_powerUp, powerUpTexture);
@@ -241,6 +242,7 @@ void MyDemoGame::createEntities()
 	for (int i = 0; i < obstacleManager->GetCount(); i++)
 	{
 		render_manager->addEntity(obstacles[i]);
+		bounding_box_manager->boundingBoxes.push_back(obstacles[i]->boundingBox);
 	}
 }
 
@@ -415,6 +417,14 @@ void MyDemoGame::UpdateScene(float dt)
     p_light01.Position = player->getPosition();
 	obstacleManager->Update(dt);
 	
+	//bounding box collisions 
+	for (int i = 0; i < bounding_box_manager->boundingBoxes.size(); i++){
+		if (bounding_box_manager->checkCollision(player->boundingBox, bounding_box_manager->boundingBoxes[i]))
+		{
+			if (bounding_box_manager->boundingBoxes[i]->name == "obstacle")
+				player->rotate(0.01f, 0.0f, 0.0f);
+		}
+	}
 }
 
 // Clear the screen, redraw everything, present
@@ -428,7 +438,7 @@ void MyDemoGame::DrawScene()
 	//  - These technically don't need to be set every frame, unless you're changing the
 	//    input layout (different kinds of vertices) or the topology (different primitives)
 	//    between draws
-	deviceContext->IASetInputLayout(inputLayout);
+	//deviceContext->IASetInputLayout(inputLayout);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	//Render to texture

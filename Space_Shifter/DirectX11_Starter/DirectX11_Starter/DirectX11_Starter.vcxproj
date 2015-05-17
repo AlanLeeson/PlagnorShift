@@ -70,7 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BoundingBoxClass.cpp" />
+    <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="BoundingBoxManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ChunkManager.cpp" />
@@ -84,12 +84,13 @@
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="ObstacleManager.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PowerUp.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="SimpleShader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoundingBoxClass.h" />
+    <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="BoundingBoxManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ChunkManager.h" />
@@ -104,6 +105,7 @@
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="ObstacleManager.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PowerUp.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="SimpleShader.h" />

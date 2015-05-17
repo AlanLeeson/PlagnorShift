@@ -19,6 +19,7 @@
 #include "Obstacle.h"
 #include "ObstacleManager.h"
 #include "PowerUp.h"
+#include "BoundingBoxManager.h"
 
 // Include run-time memory checking in debug builds
 #if defined(DEBUG) || defined(_DEBUG)
@@ -61,6 +62,7 @@ private:
 	ResourceManager* resource_manager;
 	RenderManager* render_manager;
 	ChunkManager* chunk_manager;
+	BoundingBoxManager* bounding_box_manager;
 
 	Camera* camera;
 	Camera* gameCamera;
