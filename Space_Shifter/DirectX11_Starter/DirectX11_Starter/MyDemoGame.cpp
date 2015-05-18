@@ -421,8 +421,14 @@ void MyDemoGame::UpdateScene(float dt)
 	for (int i = 0; i < bounding_box_manager->boundingBoxes.size(); i++){
 		if (bounding_box_manager->checkCollision(player->boundingBox, bounding_box_manager->boundingBoxes[i]))
 		{
-			if (bounding_box_manager->boundingBoxes[i]->name == "obstacle")
+			//bounding_box_manager->boundingBoxes[i]->collidable = false;
+			bounding_box_manager->boundingBoxes[i]->collidable = false;
+			if (bounding_box_manager->boundingBoxes[i]->name == "obstacle"){
 				player->rotate(0.01f, 0.0f, 0.0f);
+			}
+			else if (bounding_box_manager->boundingBoxes[i]->name == "powerUp"){
+				player->setNumRockets(player->getNumRockets() + 1);
+			}
 		}
 	}
 }
