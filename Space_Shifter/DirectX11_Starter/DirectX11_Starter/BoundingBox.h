@@ -17,6 +17,7 @@ public:
 
 	XMFLOAT3 position;
 	XMFLOAT3 size;
+	bool collidable;
 	//XMFLOAT3 centroid;
 	//XMFLOAT3 max;
 	//XMFLOAT3 min;

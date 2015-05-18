@@ -23,6 +23,10 @@ void BoundingBoxManager::Update()
 
 bool BoundingBoxManager::checkCollision(BoundingBox* a, BoundingBox* b)
 {
+	if (!(a->collidable && b->collidable))
+	{
+		return false;
+	}
 	//check the X axis
 	if (abs(a->position.x - b->position.x) < a->size.x + b->size.x)
 	{

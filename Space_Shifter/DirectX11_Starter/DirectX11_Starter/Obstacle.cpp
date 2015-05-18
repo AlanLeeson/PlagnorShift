@@ -34,6 +34,7 @@ void Obstacle::SetActive(bool active)
 void Obstacle::ResetLocation(void)
 {
 	float startX = positions[rand() % 3];
+	this->boundingBox->collidable = true;
 	GameEntity::setPosition(startX, -0.75f, startPosZ);
 }
 

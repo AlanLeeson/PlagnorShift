@@ -8,7 +8,7 @@ Player::Player(Mesh* mesh, Material* material)
 
 	animateMovement = false;
 	horizontalSpeed = 10.0f;
-
+	numRockets = 0;
 	railPosX = { -2.0f, 1.3f, 4.5f };
 
 	this->setScale(0.6f, 0.6f, 0.6f);
@@ -20,6 +20,16 @@ Player::Player(Mesh* mesh, Material* material)
 }
 Player::~Player()
 {
+}
+
+int Player::getNumRockets()
+{
+	return numRockets;
+}
+
+void Player::setNumRockets(int num)
+{
+	numRockets = num;
 }
 
 
@@ -84,5 +94,11 @@ void Player::Update(float dt)
 				animateMovement = false;
 			}
 		}
+	}
+
+	if (numRockets > 0 && GetAsyncKeyState(VK_SPACE) < 0)
+	{
+		rotate(0.0f, 0.1f, 0.0f);
+		numRockets--;
 	}
 }

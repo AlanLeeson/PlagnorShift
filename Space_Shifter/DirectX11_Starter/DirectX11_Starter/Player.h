@@ -18,6 +18,9 @@ public:
 
 	void Update(float dt);
 
+	int getNumRockets();
+	void setNumRockets(int num);
+
 private:
 	vector<float> railPosX;
 	
@@ -25,6 +28,8 @@ private:
 	Rail targetRail;
 
 	bool animateMovement;
+
+	int numRockets;
 
 	float horizontalSpeed;
 

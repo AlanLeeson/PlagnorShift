@@ -5,6 +5,7 @@ BoundingBox::BoundingBox(string instanceName, XMFLOAT3 pos, XMFLOAT3 s)
 	position = pos;
 	size = s;
 	name = instanceName;
+	collidable = true;
 }
 /*
 BoundingBox::BoundingBoxClass(BoundingBoxClass const& other)
