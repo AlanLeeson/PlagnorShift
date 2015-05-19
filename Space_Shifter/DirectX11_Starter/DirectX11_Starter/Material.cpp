@@ -24,6 +24,11 @@ SimplePixelShader* Material::getPixelShader(void)
 	return pShader;
 }
 
+ID3D11ShaderResourceView* Material::getSRV(void)
+{
+	return this->srv;
+}
+
 void Material::mapShaderData(TransformBuffer b_transform, LightingBuffer b_lighting)
 {
 	vShader->SetMatrix4x4("world", b_transform.World);

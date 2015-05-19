@@ -29,6 +29,7 @@ public:
 
 	SimpleVertexShader* getVertexShader(void);
 	SimplePixelShader* getPixelShader(void);
+	ID3D11ShaderResourceView* getSRV(void);
 
 	void mapShaderData(TransformBuffer, LightingBuffer);
 

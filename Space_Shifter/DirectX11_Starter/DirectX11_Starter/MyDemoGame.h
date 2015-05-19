@@ -42,6 +42,7 @@ public:
 	void OnResize();
 	void UpdateScene(float dt);
 	void DrawScene(); 
+	void DrawMenu();
 
 	// For handing mouse input
 	void OnMouseDown(WPARAM btnState, int x, int y);
@@ -75,6 +76,10 @@ private:
 	PointLight p_light01;
 	PointLight p_light02;
 	bool whichCam;
+
+	SimplePixelShader* menuPS;
+	Material* menuMat;
+	ID3D11SamplerState* menuSampler;
 
 	Material* railTexture;
 	Material* simpleMat_racer;

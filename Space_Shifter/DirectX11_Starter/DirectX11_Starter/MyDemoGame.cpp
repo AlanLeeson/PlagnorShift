@@ -284,6 +284,9 @@ void MyDemoGame::createEntities()
 
 void MyDemoGame::createMaterials()
 {
+	resource_manager->loadMaterial("FullScreenQuad", "MenuPS", "Menu", "Menu");
+	resource_manager->getMaterial("Menu", &menuMat);
+
 	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "RailTexture", "RailTexture");
 	resource_manager->getMaterial("RailTexture", &railTexture);
 
@@ -444,12 +447,16 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	resource_manager->loadVertexShader("QuadVS.cso", "FullScreenQuad");
 	resource_manager->loadPixelShader("QuadPS.cso", "FullScreenQuad");
 
+	resource_manager->loadPixelShader("Menu_PS.cso", "MenuPS");
+
 	resource_manager->loadPixelShader("Bloom_highlight_PS.cso", "Bloom_Highlight");
 	resource_manager->loadPixelShader("Gauss_blur_horizontal_PS.cso", "Gauss_Horizontal");
 	resource_manager->loadPixelShader("Gauss_blur_vertical_PS.cso", "Gauss_Vertical");
 
 	resource_manager->loadPixelShader("Blur_PS.cso", "Blur");
 	resource_manager->loadPixelShader("MaskPS.cso", "Mask");
+
+	resource_manager->getPixelShader("MenuPS", &menuPS);
 
 	resource_manager->getVertexShader("FullScreenQuad", &quadVS);
 	resource_manager->getPixelShader("FullScreenQuad", &quadPS);
@@ -515,6 +522,22 @@ void MyDemoGame::loadTextures()
 
 	HR(device->CreateSamplerState(&sd, &sampler));
 
+	D3D11_SAMPLER_DESC sdMenu;
+	ZeroMemory(&sdMenu, sizeof(D3D11_SAMPLER_DESC));
+	sdMenu.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	sdMenu.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	sdMenu.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	//sd.BorderColor = float(0.0f, 0.0f, 0.0f, 0.0f);
+	sdMenu.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
+	sdMenu.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sdMenu.MaxAnisotropy = 0;
+	sdMenu.MaxLOD = D3D11_FLOAT32_MAX;
+	sdMenu.MinLOD = 0;
+	sdMenu.MipLODBias = 0;
+
+	HR(device->CreateSamplerState(&sdMenu, &menuSampler));
+
+	resource_manager->loadTexture("startPage.png", sdMenu, "Menu");
 	resource_manager->loadTexture("WoodFine0031_19_S.jpg", sd, "wood");
 	resource_manager->loadTexture("MetalBare0144_1_S.jpg", sd, "metal");
 	resource_manager->loadTexture("RailTexture.png", sd, "RailTexture");
@@ -911,6 +934,47 @@ void MyDemoGame::DrawScene()
 	//  - Always at the end of the frame
 	HR(swapChain->Present(0, 0));
 }
+
+void MyDemoGame::DrawMenu()
+{
+	// Background color (Cornflower Blue in this case) for clearing
+	const float color[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
+	const float blurColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	const float maskColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	// Set up the input assembler
+	//  - These technically don't need to be set every frame, unless you're changing the
+	//    input layout (different kinds of vertices) or the topology (different primitives)
+	//    between draws
+	//deviceContext->IASetInputLayout(inputLayout);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	SimpleVertexShader* menuVS = menuMat->getVertexShader();
+	SimplePixelShader* menuPS = menuMat->getPixelShader();
+	ID3D11ShaderResourceView* menuSRV = menuMat->getSRV();
+
+	menuVS->SetShader();
+
+	// Set data
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	ID3D11Buffer* vb = fullscreenQuad->getVertexBuffer();
+	deviceContext->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+	deviceContext->IASetIndexBuffer(fullscreenQuad->getIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
+	deviceContext->ClearRenderTargetView(renderTargetView, blurColor);
+
+	menuPS->SetShaderResourceView("menuTexture", menuSRV);
+	menuPS->SetSamplerState("basicSampler", menuSampler);
+	menuPS->SetShader();
+
+	// Draw
+	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
+
+	HR(swapChain->Present(0, 0));
+}
+
 #pragma endregion
 
 #pragma region Mouse Input
