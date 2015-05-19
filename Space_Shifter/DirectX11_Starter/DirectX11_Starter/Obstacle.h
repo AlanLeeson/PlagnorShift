@@ -13,6 +13,7 @@ public:
 	float Active(void);
 
 	bool OutOfBounds(void);
+	void SpeedUp(float amount);
 
 	void SetActive(bool active);
 	void ResetLocation(void);
