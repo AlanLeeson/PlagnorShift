@@ -657,6 +657,7 @@ void MyDemoGame::UpdateScene(float dt)
 	if (whichCam){
 		camera->Update(dt);
 	}
+	gameCamera->Update(dt);
 	//gameCamera->Update(dt);
 	if (GetAsyncKeyState('A') & 0x8000)
 	{
@@ -675,6 +676,8 @@ void MyDemoGame::UpdateScene(float dt)
 
 	player->Update(dt);
     p_light01.Position = player->getPosition();
+	XMFLOAT3 pPos = player->getPosition();
+	gameCamera->position.x = (pPos.x - 1.4f) / 4;
 	obstacleManager->Update(dt);
 	
 	//bounding box collisions 
