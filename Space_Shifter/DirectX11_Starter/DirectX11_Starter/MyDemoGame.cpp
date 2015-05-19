@@ -671,7 +671,6 @@ void MyDemoGame::UpdateScene(float dt)
 	{
 		obstacleManager->SlowMotion();
 		player->setNumWatches(player->getNumWatches() - 1);
-		player->rotate(0.0f, 0.01f, 0.0f);
 	}
 
 	player->Update(dt);
@@ -688,6 +687,8 @@ void MyDemoGame::UpdateScene(float dt)
 			bounding_box_manager->boundingBoxes[i]->collidable = false;
 			if (bounding_box_manager->boundingBoxes[i]->name == "obstacle"){
 				player->rotate(0.01f, 0.0f, 0.0f);
+				gStates.GAME_STATE = gStates.GAME_STATE_MENU;
+				resetGame();
 			}
 			else if (bounding_box_manager->boundingBoxes[i]->name == "rocket"){
 				player->setNumRockets(player->getNumRockets() + 1);
