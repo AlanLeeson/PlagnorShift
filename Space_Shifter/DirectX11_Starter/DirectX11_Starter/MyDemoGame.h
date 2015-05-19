@@ -58,6 +58,9 @@ private:
 	void createEntities(void);
 	void InitializeCameraMatrices();
 
+	void CreateGeometryBuffers();
+	void DrawSpawn();
+	void SwapSOBuffers();
 private:
 	ResourceManager* resource_manager;
 	RenderManager* render_manager;
@@ -137,4 +140,39 @@ private:
 
 	Mesh* m_obstacle;
 	ObstacleManager* obstacleManager;
+
+	//buffer stuff for geometry shader
+	ID3D11Buffer* soBufferRead;
+	ID3D11Buffer* soBufferWrite;
+	bool spawnFlip;
+	int frameCount;
+	//particle effect shaders
+	SimpleVertexShader* engVertexShader;
+	SimplePixelShader* engPixelShader;
+	SimpleGeometryShader* engGeometryShader;
+	SimpleVertexShader* engSpawnVS;
+	SimpleGeometryShader* engSpawnGS;
+	//random data for shaders
+	ID3D11Texture1D* randomTexture;
+	ID3D11ShaderResourceView* randomSRV;
+	ID3D11SamplerState* randomSampler;
+	//blend state for particles
+	ID3D11BlendState* blendState;
+	ID3D11DepthStencilState* depthState;
+	//texture sampler and resource view
+	ID3D11SamplerState * sampState; 
+	ID3D11ShaderResourceView* shaderRV;
+
+	// Particle params
+	XMFLOAT3 particleStartPosition;
+	XMFLOAT3 particleStartVelocity;
+	XMFLOAT4 particleStartColor;
+	XMFLOAT4 particleMidColor;
+	XMFLOAT4 particleEndColor;
+	float particleStartSize;
+	float particleMidSize;
+	float particleEndSize;
+	float particleAgeToSpawn;
+	float particleMaxLifetime;
+	XMFLOAT3 particleConstantAccel;
 };

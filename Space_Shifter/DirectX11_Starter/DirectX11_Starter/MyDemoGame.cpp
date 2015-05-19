@@ -57,6 +57,19 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance) : DirectXGame(hInstance)
 	windowCaption = L"Demo DX11 Game";
 	windowWidth = 800;
 	windowHeight = 600;
+
+	//initialize engine particle data
+	particleStartPosition = XMFLOAT3(0, 0, 0);
+	particleStartVelocity = XMFLOAT3(0, 0, 0);
+	particleStartColor = XMFLOAT4(0.5f, 0.5f, 1, 0);
+	particleMidColor = XMFLOAT4(0.6f, 0.6f, 1, 0.1f);
+	particleEndColor = XMFLOAT4(0.9f, 0.9f, 1, 0);
+	particleStartSize = 1;
+	particleMidSize = 2;
+	particleEndSize = 8;
+	particleAgeToSpawn = 0.01f;
+	particleMaxLifetime = 1.0f;
+	particleConstantAccel = XMFLOAT3(0, -1.0f, 0);
 }
 
 MyDemoGame::~MyDemoGame()
@@ -113,6 +126,19 @@ MyDemoGame::~MyDemoGame()
 	delete obstacleManager;
 	obstacleManager = nullptr;
 
+	delete engVertexShader;
+	delete engPixelShader;
+	delete engGeometryShader;
+	delete engSpawnGS;
+	delete engSpawnVS;
+
+	soBufferRead->Release();
+	soBufferWrite->Release();
+
+	randomSampler->Release();
+	randomSRV->Release();
+	randomTexture->Release();
+
 	// Release all of the D3D stuff that's still hanging out
 	ReleaseMacro(vertexBuffer);
 	ReleaseMacro(indexBuffer);
@@ -145,7 +171,8 @@ bool MyDemoGame::Init()
 	bounding_box_manager = &BoundingBoxManager::getInstance();
 	// Create the necessary DirectX buffers to draw something
 	loadResources();
-	
+	CreateGeometryBuffers();
+
 	// Load pixel & vertex shaders, and then create an input layout
 	LoadShadersAndInputLayout();
 
@@ -255,7 +282,7 @@ void MyDemoGame::createMaterials()
 	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "RailTexture", "RailTexture");
 	resource_manager->getMaterial("RailTexture", &railTexture);
 
-	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "racer", "racer");
+	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "racerTexture", "racer");
 	resource_manager->getMaterial("racer", &simpleMat_racer);
 
 	resource_manager->loadMaterial("Default_Diffuse", "Default_Diffuse", "wood", "obstacle");
@@ -269,6 +296,123 @@ void MyDemoGame::loadResources()
 {
 	loadMeshes();
 	loadTextures();
+}
+
+void MyDemoGame::CreateGeometryBuffers()
+{
+	// Create some temporary variables to represent colors
+	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+
+	// Set up the vertices we want to put into the Vertex Buffer
+	PVertex vertices[1];
+	vertices[0].Type = 0;
+	vertices[0].Age = 0.0f;
+	vertices[0].StartPosition = particleStartPosition;
+	vertices[0].StartVelocity = particleStartVelocity;
+	vertices[0].StartColor = particleStartColor;
+	vertices[0].MidColor = particleMidColor;
+	vertices[0].EndColor = particleEndColor;
+	vertices[0].StartMidEndSize = XMFLOAT3(
+		particleStartSize,
+		particleMidSize,
+		particleEndSize);
+
+	// Create the vertex buffer
+	D3D11_BUFFER_DESC vbd;
+	vbd.Usage = D3D11_USAGE_IMMUTABLE;
+	vbd.ByteWidth = sizeof(Vertex)* 1; // Number of vertices in the "model" you want to draw
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = 0;
+	vbd.MiscFlags = 0;
+	vbd.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA initialVertexData;
+	initialVertexData.pSysMem = vertices;
+	HR(device->CreateBuffer(&vbd, &initialVertexData, &vertexBuffer));
+
+	// Set up the indices of the vertices (necessary for indexed drawing)
+	UINT indices[] = { 0 };
+
+	// Create the index buffer
+	D3D11_BUFFER_DESC ibd;
+	ibd.Usage = D3D11_USAGE_IMMUTABLE;
+	ibd.ByteWidth = sizeof(UINT)* 1; // Number of indices in the "model" you want to draw
+	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	ibd.CPUAccessFlags = 0;
+	ibd.MiscFlags = 0;
+	ibd.StructureByteStride = 0;
+	D3D11_SUBRESOURCE_DATA initialIndexData;
+	initialIndexData.pSysMem = indices;
+	HR(device->CreateBuffer(&ibd, &initialIndexData, &indexBuffer));
+
+
+	// Set up "random" stuff -------------------------------------
+	unsigned int randomTextureWidth = 512;
+
+	// Random data for the 1D texture
+	std::vector<float> data(randomTextureWidth * 4);
+	for (unsigned int i = 0; i < randomTextureWidth * 4; i++)
+		data[i] = rand() / (float)RAND_MAX * 2.0f - 1.0f;
+
+	// Set up texture
+	D3D11_TEXTURE1D_DESC textureDesc;
+	textureDesc.ArraySize = 1;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_SNORM;
+	textureDesc.MipLevels = 1;
+	textureDesc.MiscFlags = 0;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.Width = 100;
+
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = (void*)&data[0];
+	initData.SysMemPitch = randomTextureWidth * sizeof(float)* 4;
+	initData.SysMemSlicePitch = 0;
+	device->CreateTexture1D(&textureDesc, &initData, &randomTexture);
+
+	// Set up SRV for texture
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+	srvDesc.Texture1D.MipLevels = 1;
+	srvDesc.Texture1D.MostDetailedMip = 0;
+	device->CreateShaderResourceView(randomTexture, &srvDesc, &randomSRV);
+
+	// Sampler
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(D3D11_SAMPLER_DESC));
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	device->CreateSamplerState(&samplerDesc, &randomSampler);
+
+	// Blend state
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;
+	blendDesc.RenderTarget[0].BlendEnable = true;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	device->CreateBlendState(&blendDesc, &blendState);
+
+	float factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	deviceContext->OMSetBlendState(blendState, factor, 0xffffffff);
+
+	// Depth state
+	D3D11_DEPTH_STENCIL_DESC depthDesc;
+	ZeroMemory(&depthDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	depthDesc.DepthEnable = false;
+	device->CreateDepthStencilState(&depthDesc, &depthState);
+	deviceContext->OMSetDepthStencilState(depthState, 0);
 }
 
 void MyDemoGame::loadMeshes()
@@ -304,6 +448,40 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	resource_manager->getPixelShader("Bloom_Highlight", &bloom_highlightPS);
 	resource_manager->getPixelShader("Gauss_Horizontal", &bloom_gauss_hPS);
 	resource_manager->getPixelShader("Gauss_Vertical", &bloom_gauss_vPS);
+
+	//stuff for geometry shader particles (should probably use resource manager for most of this...
+	engVertexShader = new SimpleVertexShader(device, deviceContext);
+	engVertexShader->LoadShaderFile(L"EngineVS.cso");
+
+	engPixelShader = new SimplePixelShader(device, deviceContext);
+	engPixelShader->LoadShaderFile(L"EnginePS.cso");
+
+	engGeometryShader = new SimpleGeometryShader(device, deviceContext);
+	engGeometryShader->LoadShaderFile(L"EngineGeometryShader.cso");
+
+	engSpawnGS = new SimpleGeometryShader(device, deviceContext, true, false);
+	engSpawnGS->LoadShaderFile(L"EngineSpawnGS.cso");
+
+	engSpawnVS = new SimpleVertexShader(device, deviceContext);
+	engSpawnVS->LoadShaderFile(L"EngineSpawnVS.cso");
+
+	//create texture
+	//load texture
+	CreateWICTextureFromFile(device, deviceContext, L"smoke.png", 0, &shaderRV);
+	//create sampler state
+	D3D11_SAMPLER_DESC sampDesc;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	device->CreateSamplerState(&sampDesc, &sampState);
+
+	// Create SO buffers
+	engSpawnGS->CreateCompatibleStreamOutBuffer(&soBufferRead, 1000000);
+	engSpawnGS->CreateCompatibleStreamOutBuffer(&soBufferWrite, 1000000);
+	spawnFlip = false;
+	frameCount = 0;
 }
 
 void MyDemoGame::loadTextures()
@@ -326,7 +504,7 @@ void MyDemoGame::loadTextures()
 	resource_manager->loadTexture("WoodFine0031_19_S.jpg", sd, "wood");
 	resource_manager->loadTexture("MetalBare0144_1_S.jpg", sd, "metal");
 	resource_manager->loadTexture("RailTexture.png", sd, "RailTexture");
-	resource_manager->loadTexture("plagnortex.png", sd, "racer");
+	resource_manager->loadTexture("plagnortex2.png", sd, "racerTexture");
 
 	//Render target setup
 	D3D11_TEXTURE2D_DESC rtDesc;
@@ -400,10 +578,12 @@ void MyDemoGame::OnResize()
 #pragma endregion
 
 #pragma region Game Loop
-
+float x = 0;
 // Update your game state
 void MyDemoGame::UpdateScene(float dt)
 {
+	x += dt;
+
 	// Take input, update game logic, etc.
 	if (whichCam){
 		camera->Update(dt);
@@ -445,6 +625,62 @@ void MyDemoGame::UpdateScene(float dt)
 	}
 }
 
+// Swaps stream out buffers for ping-ponging
+void MyDemoGame::SwapSOBuffers()
+{
+	ID3D11Buffer* temp = soBufferRead;
+	soBufferRead = soBufferWrite;
+	soBufferWrite = temp;
+}
+
+// Handles the "drawing" of particle spawns
+void MyDemoGame::DrawSpawn()
+{
+	UINT stride = sizeof(PVertex);
+	UINT offset = 0;
+
+	// Set/unset correct shaders
+	// Set the delta time for the spawning
+	engSpawnGS->SetFloat("dt", timer.DeltaTime());
+	engSpawnGS->SetFloat("ageToSpawn", particleAgeToSpawn);
+	engSpawnGS->SetFloat("maxLifetime", particleMaxLifetime);
+	engSpawnGS->SetFloat("totalTime", timer.TotalTime());
+	engSpawnGS->SetSamplerState("randomSampler", randomSampler);
+	engSpawnGS->SetShaderResourceView("randomTexture", randomSRV);
+
+	engSpawnVS->SetShader();
+	engSpawnVS->SetShader();
+	deviceContext->PSSetShader(0, 0, 0); // No pixel shader needed
+
+	// Unbind vertex buffers (incase)
+	ID3D11Buffer* unset = 0;
+	deviceContext->IASetVertexBuffers(0, 1, &unset, &stride, &offset);
+
+	// First frame?
+	if (frameCount == 0)
+	{
+		// Draw using the seed vertex
+		deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+		deviceContext->SOSetTargets(1, &soBufferWrite, &offset);
+		deviceContext->Draw(1, 0);
+		frameCount++;
+	}
+	else
+	{
+		// Draw using the buffers
+		deviceContext->IASetVertexBuffers(0, 1, &soBufferRead, &stride, &offset);
+		deviceContext->SOSetTargets(1, &soBufferWrite, &offset);
+		deviceContext->DrawAuto();
+	}
+
+	// Unbind SO targets
+	SimpleGeometryShader::UnbindStreamOutStage(deviceContext);
+
+	// Swap after draw
+	SwapSOBuffers();
+}
+
+
 // Clear the screen, redraw everything, present
 void MyDemoGame::DrawScene()
 {
@@ -472,6 +708,11 @@ void MyDemoGame::DrawScene()
 		1.0f,
 		0);
 
+	//****
+	deviceContext->OMSetBlendState(0, 0, 0xffffffff);//reset blend state
+	deviceContext->OMSetDepthStencilState(0, 0);	 //reset depth state
+	//****
+
 	//Renders all game entities with a specific camera
 	if (whichCam){
 		render_manager->renderAll(camera);
@@ -481,14 +722,14 @@ void MyDemoGame::DrawScene()
 	}
 
 	quadVS->SetShader();
-
+	
 	// Set data
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	ID3D11Buffer* vb = fullscreenQuad->getVertexBuffer();
 	deviceContext->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
 	deviceContext->IASetIndexBuffer(fullscreenQuad->getIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
+	
 	//Get the highlights for the bloom shader
 	deviceContext->OMSetRenderTargets(1, &rtv_highlight, 0);
 	deviceContext->ClearRenderTargetView(rtv_highlight, blurColor);
@@ -524,7 +765,7 @@ void MyDemoGame::DrawScene()
 
 	// Draw
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
-
+	
 	// Go back to the regular "back buffer"
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
 	deviceContext->ClearRenderTargetView(renderTargetView, color);
@@ -540,7 +781,7 @@ void MyDemoGame::DrawScene()
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
 
 	// Stick with the back buffer, but re-enable the depth buffer from earlier
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	//deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 	// Unset the shader resource
 	ID3D11ShaderResourceView* unset[2] = { 0, 0 };
