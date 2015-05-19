@@ -327,7 +327,7 @@ int DirectXGame::Run()
 			{
 				// Standard game loop type stuff
 				if (gStates.GAME_STATE == gStates.GAME_STATE_MENU){
-					//do nothing
+					DrawMenu();
 				}
 				else if (gStates.GAME_STATE == gStates.GAME_STATE_PLAY){
 					CalculateFrameStats();
