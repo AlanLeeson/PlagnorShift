@@ -977,6 +977,12 @@ void MyDemoGame::DrawMenu()
 
 #pragma endregion
 
+void MyDemoGame::resetGame()
+{
+	player->reset();
+	obstacleManager->reset();
+}
+
 #pragma region Mouse Input
 
 // These methods don't do much currently, but can be used for mouse-related input

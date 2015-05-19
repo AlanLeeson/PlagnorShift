@@ -43,6 +43,7 @@ public:
 	void UpdateScene(float dt);
 	void DrawScene(); 
 	void DrawMenu();
+	void resetGame();
 
 	// For handing mouse input
 	void OnMouseDown(WPARAM btnState, int x, int y);

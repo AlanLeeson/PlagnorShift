@@ -21,6 +21,7 @@ public:
 	void Update(float dt);
 	Obstacle *getRocket();
 	void setRocket(Mesh*mesh, Material*material);
+	void reset();
 
 	int getNumRockets();
 	void setNumRockets(int num);
@@ -31,7 +32,7 @@ public:
 
 private:
 	vector<float> railPosX;
-	
+
 	Rail currentRail;
 	Rail targetRail;
 

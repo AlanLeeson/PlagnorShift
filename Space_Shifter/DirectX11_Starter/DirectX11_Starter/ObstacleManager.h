@@ -15,6 +15,7 @@ public:
 	void pushPowerUp(Mesh * mesh, Material* material, string type);
 	void Update(float dt);
 	void SlowMotion();
+	void reset();
 
 private:
 	vector<Obstacle*> obstacles;

@@ -330,6 +330,11 @@ int DirectXGame::Run()
 					DrawMenu();
 				}
 				else if (gStates.GAME_STATE == gStates.GAME_STATE_PLAY){
+					if (GetAsyncKeyState('R') & 0x8000)
+					{
+						gStates.GAME_STATE = gStates.GAME_STATE_MENU;
+						resetGame();
+					}
 					CalculateFrameStats();
 					UpdateScene(timer.DeltaTime());
 					DrawScene();

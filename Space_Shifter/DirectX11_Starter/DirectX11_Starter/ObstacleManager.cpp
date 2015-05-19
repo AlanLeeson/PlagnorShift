@@ -2,7 +2,7 @@
 
 ObstacleManager::ObstacleManager(int numObstacles, Mesh* mesh, Material* material)
 {
-	spawnCooldown = 1.5f; 
+	spawnCooldown = 1.5f;
 	timeSinceLastSpawn = 0.0f;
 
 	spawnFastAfterNumSeconds = 5.0f;
@@ -37,6 +37,22 @@ void ObstacleManager::SlowMotion()
 	}
 }
 
+void ObstacleManager::reset()
+{
+	for (int i = 0; i < GetCount(); i++)
+	{
+		obstacles[i]->reset();
+	}
+
+	spawnCooldown = 1.5f;
+	timeSinceLastSpawn = 0.0f;
+
+	spawnFastAfterNumSeconds = 5.0f;
+	timeSinceLastSpawnChange = 0.0f;
+
+	minSpawnTime = 0.5f;
+}
+
 void ObstacleManager::pushPowerUp(Mesh * mesh, Material * material, string type){
 	obstacles.push_back(new PowerUp(mesh, material, type));
 }
@@ -69,7 +85,7 @@ void ObstacleManager::Update(float dt)
 		else
 		{
 			// Check if we can spawn this obstacle
-			if (timeSinceLastSpawn >= spawnCooldown && rand()%GetCount() ==0)
+			if (timeSinceLastSpawn >= spawnCooldown && rand() % GetCount() == 0)
 			{
 				obstacle->SetActive(true);
 				obstacle->ResetLocation();

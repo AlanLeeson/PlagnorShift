@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player(Mesh* mesh, Material* material)
-:GameEntity(mesh, material)
+	:GameEntity(mesh, material)
 {
 	currentRail = Middle;
 	targetRail = Middle;
@@ -17,7 +17,7 @@ Player::Player(Mesh* mesh, Material* material)
 	this->setPosition(railPosX[this->currentRail], -0.75f, 3.0f);
 	this->rotate(0.0f, 0.0f, 0.05f);
 	XMFLOAT3 curPos = this->getPosition();
-	XMFLOAT3 newPos = XMFLOAT3(curPos.x - 1.0f, curPos.y, curPos.z); 
+	XMFLOAT3 newPos = XMFLOAT3(curPos.x - 1.0f, curPos.y, curPos.z);
 	this->boundingBox = new BoundingBox("player", newPos, XMFLOAT3(0.8, 1, 1));
 }
 Player::~Player()
@@ -44,6 +44,15 @@ void Player::setNumWatches(int num)
 	numWatches = num;
 }
 
+void Player::reset()
+{
+	numWatches = 1;
+	numRockets = 5;
+	currentRail = Middle;
+	targetRail = Middle;
+	this->setPosition(railPosX[this->currentRail], -0.75f, 3.0f);
+}
+
 void Player::setRocket(Mesh*mesh, Material*material)
 {
 	rocket = new PowerUp(mesh, material, "rocket");
@@ -68,22 +77,22 @@ Obstacle * Player::getRocket()
 }
 
 void Player::move(int direction)
-{ 
-	if (direction == 0  || animateMovement)
+{
+	if (direction == 0 || animateMovement)
 		return;
 
 	// Determine the target rail
 	switch (currentRail)
 	{
-		case Left:
-			targetRail = direction >= 1 ? Middle : currentRail;
-			break;
-		case Middle:
-			targetRail = direction >= 1 ? Right : Left;
-			break;
-		case Right:
-			targetRail = direction >= 1 ? currentRail : Middle;
-			break;
+	case Left:
+		targetRail = direction >= 1 ? Middle : currentRail;
+		break;
+	case Middle:
+		targetRail = direction >= 1 ? Right : Left;
+		break;
+	case Right:
+		targetRail = direction >= 1 ? currentRail : Middle;
+		break;
 	}
 
 	animateMovement = true;
@@ -138,7 +147,7 @@ void Player::Update(float dt)
 		rocket->SetActive(true);
 		fireRocket = true;
 		XMFLOAT3 position = GameEntity::getPosition();
-		rocket->setPosition(position.x-1.45f,position.y+0.8f,position.z);
+		rocket->setPosition(position.x - 1.45f, position.y + 0.8f, position.z);
 		numRockets--;
 	}
 }

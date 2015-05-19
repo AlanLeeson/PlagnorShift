@@ -60,6 +60,7 @@ public:
 	virtual void UpdateScene(float dt)=0;
 	virtual void DrawScene()=0;
 	virtual void DrawMenu()=0;
+	virtual void resetGame() = 0;
 	virtual LRESULT MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 	// Convenience overrides for handling mouse input.
