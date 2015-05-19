@@ -23,7 +23,8 @@ public:
 	void setRocket(Mesh*mesh, Material*material);
 
 	int getNumRockets();
-	void setNumRockets(int num); 
+	void setNumRockets(int num);
+	bool getIsMoving();
 
 private:
 	vector<float> railPosX;

@@ -1,4 +1,4 @@
-#define blurSize 7
+#define blurSize 5
 
 
 cbuffer blurData : register(b0)
@@ -27,7 +27,7 @@ float4 main(VertexToPixel input) : SV_TARGET
 
 	for (int i = 0; i <= blurSize * 2; i++)
 	{
-		float2 offset = float2(pixelSize.x * (i - blurSize * 2), 0.0f);
+		float2 offset = float2(pixelSize.x * (i - blurSize), 0.0f);
 		finalColor += diffuseTexture.Sample(basicSampler, input.uv + offset);
 	}
 	finalColor /= blurSize * 2;

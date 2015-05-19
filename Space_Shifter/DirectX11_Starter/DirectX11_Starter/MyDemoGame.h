@@ -90,6 +90,9 @@ private:
 	SimpleVertexShader* quadVS;
 	SimplePixelShader* quadPS;
 
+	SimplePixelShader* blurPS;
+	SimplePixelShader* maskPS;
+
 	ID3D11Texture2D* bloomTexture_highlight;
 	ID3D11RenderTargetView* rtv_highlight;
 	ID3D11ShaderResourceView* rtsrv_highlight;
@@ -108,6 +111,10 @@ private:
 	ID3D11Texture2D* bloomTexture_original;
 	ID3D11RenderTargetView* rtv_original;
 	ID3D11ShaderResourceView* rtsrv_original;
+
+	ID3D11Texture2D* bloomTexture_final;
+	ID3D11RenderTargetView* rtv_final;
+	ID3D11ShaderResourceView* rtsrv_final;
 
 	SimpleVertexShader* bloomVS;
 	SimplePixelShader* bloomPS;

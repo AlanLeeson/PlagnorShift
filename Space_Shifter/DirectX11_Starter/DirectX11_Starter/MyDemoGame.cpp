@@ -442,12 +442,16 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	resource_manager->loadPixelShader("Gauss_blur_horizontal_PS.cso", "Gauss_Horizontal");
 	resource_manager->loadPixelShader("Gauss_blur_vertical_PS.cso", "Gauss_Vertical");
 
+	resource_manager->loadPixelShader("Blur_PS.cso", "Blur");
+
 	resource_manager->getVertexShader("FullScreenQuad", &quadVS);
 	resource_manager->getPixelShader("FullScreenQuad", &quadPS);
 
 	resource_manager->getPixelShader("Bloom_Highlight", &bloom_highlightPS);
 	resource_manager->getPixelShader("Gauss_Horizontal", &bloom_gauss_hPS);
 	resource_manager->getPixelShader("Gauss_Vertical", &bloom_gauss_vPS);
+
+	resource_manager->getPixelShader("Blur", &blurPS);
 
 	//stuff for geometry shader particles (should probably use resource manager for most of this...
 	engVertexShader = new SimpleVertexShader(device, deviceContext);
@@ -525,6 +529,7 @@ void MyDemoGame::loadTextures()
 	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_highlight);
 	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_gaussH);
 	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_gaussV);
+	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_final);
 
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
 	ZeroMemory(&rtvDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
@@ -537,6 +542,7 @@ void MyDemoGame::loadTextures()
 	device->CreateRenderTargetView(bloomTexture_highlight, &rtvDesc, &rtv_highlight);
 	device->CreateRenderTargetView(bloomTexture_gaussH, &rtvDesc, &rtv_gaussH);
 	device->CreateRenderTargetView(bloomTexture_gaussV, &rtvDesc, &rtv_gaussV);
+	device->CreateRenderTargetView(bloomTexture_final, &rtvDesc, &rtv_final);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
@@ -550,6 +556,7 @@ void MyDemoGame::loadTextures()
 	device->CreateShaderResourceView(bloomTexture_highlight, &srvDesc, &rtsrv_highlight);
 	device->CreateShaderResourceView(bloomTexture_gaussH, &srvDesc, &rtsrv_gaussH);
 	device->CreateShaderResourceView(bloomTexture_gaussV, &srvDesc, &rtsrv_gaussV);
+	device->CreateShaderResourceView(bloomTexture_final, &srvDesc, &rtsrv_final);
 
 }
 
@@ -794,8 +801,8 @@ void MyDemoGame::DrawScene()
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
 	
 	// Go back to the regular "back buffer"
-	deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
-	deviceContext->ClearRenderTargetView(renderTargetView, color);
+	deviceContext->OMSetRenderTargets(1, &rtv_final, 0);
+	deviceContext->ClearRenderTargetView(rtv_final, color);
 
 	quadPS->SetSamplerState("basicSampler", sampler);
 	quadPS->SetShaderResourceView("diffuseTexture", rtsrv_gaussV);
@@ -803,6 +810,20 @@ void MyDemoGame::DrawScene()
 	quadPS->SetInt("blurAmount", 0);
 	quadPS->SetFloat2("pixelSize", XMFLOAT2(1.0f / windowWidth, 1.0f / windowHeight));
 	quadPS->SetShader();
+
+	// Draw
+	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
+
+	//Blur everything but the player
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
+	deviceContext->ClearRenderTargetView(renderTargetView, blurColor);
+
+	blurPS->SetFloat2("pixelSize", XMFLOAT2(1.0f / windowWidth, 1.0f / windowHeight));
+	float moveFloat = player->getIsMoving() ? 1.0f : 0.0f;
+	blurPS->SetFloat("moving", moveFloat);
+	blurPS->SetSamplerState("basicSampler", sampler);
+	blurPS->SetShaderResourceView("diffuseTexture", rtsrv_final);
+	blurPS->SetShader();
 
 	// Draw
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);

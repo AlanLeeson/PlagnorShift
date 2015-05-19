@@ -41,6 +41,11 @@ void Player::setRocket(Mesh*mesh, Material*material)
 	//rocket->setPosition(-3.0f, 4.0f, 2.0f);
 }
 
+bool Player::getIsMoving()
+{
+	return this->animateMovement;
+}
+
 Obstacle * Player::getRocket()
 {
 	return rocket;
