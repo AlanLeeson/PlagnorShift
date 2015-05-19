@@ -1,31 +1,15 @@
-﻿Build started 4/28/2015 10:39:55 AM.
+﻿Build started 5/19/2015 3:43:27 PM.
      1>Project "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(381,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (DirectX11_Starter.vcxproj, DirectX11_HW3.vcxproj, DirectX11_HW4.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\\DirectXTK\Inc" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MyDemoGame.cpp
-         MyDemoGame.cpp
+     1>FxCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\fxc.exe /nologo /E"main" /T ps_4_0_level_9_3 /Fo "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Blur_PS.cso" /Od /Zi Blur_PS.hlsl 
+     1>C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectX11_Starter\Blur_PS.hlsl(40,18-71): warning X3570: gradient instruction used in a loop with varying iteration, forcing loop to unroll
+         
+         compilation object save succeeded; see C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Blur_PS.cso
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Lap_01.exe" /INCREMENTAL /NOLOGO d3d11.lib d3dcompiler.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Lap_01.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Lap_01.lib" /MACHINE:X86 Debug\BoundingBoxClass.obj
-         Debug\BoundingBoxManager.obj
-         Debug\Camera.obj
-         Debug\ChunkManager.obj
-         Debug\GameEntity.obj
-         Debug\Material.obj
-         Debug\Mesh.obj
-         Debug\MyDemoGame.obj
-         Debug\dxerr.obj
-         Debug\DirectXGame.obj
-         Debug\GameTimer.obj
-         Debug\Obstacle.obj
-         Debug\ObstacleManager.obj
-         Debug\Player.obj
-         Debug\RenderManager.obj
-         Debug\ResourceManager.obj
-         Debug\SimpleShader.obj
-         "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectXTK\Bin\Desktop_2013\Win32\Debug\DirectXTK.lib"
          DirectX11_Starter.vcxproj -> C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Lap_01.exe
      1>Done Building Project "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:08.03
+Time Elapsed 00:00:00.81

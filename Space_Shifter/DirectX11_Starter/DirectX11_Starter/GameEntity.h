@@ -28,6 +28,7 @@ public:
 	XMFLOAT3 getScale(void);
 	bool getIsMatrixDirty(void);
 	Material* getMaterial(void);
+	Mesh* getMesh(void);
 
 	//virtual void setShaderVariables();
 
@@ -42,6 +43,7 @@ public:
 
 	void createWorldMatrix(void);
 	void draw(ID3D11Device*, ID3D11DeviceContext*);
+	void drawMask(ID3D11Device*, ID3D11DeviceContext*);
 
 	BoundingBox* boundingBox;
 private:

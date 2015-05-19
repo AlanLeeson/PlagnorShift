@@ -105,6 +105,11 @@ Material* GameEntity::getMaterial(void)
 	return this->material;
 }
 
+Mesh* GameEntity::getMesh(void)
+{
+	return this->mesh;
+}
+
 void GameEntity::move(XMFLOAT3 amount)
 {
 	XMVECTOR v_pos = XMLoadFloat3(&_position);
@@ -197,6 +202,25 @@ void GameEntity::draw(ID3D11Device* device, ID3D11DeviceContext* context)
 
 	SimplePixelShader* pShader = material->getPixelShader();
 	pShader->SetShader();
+
+	mesh->draw(device, context);
+
+	isMatrixDirty = false;
+}
+
+void GameEntity::drawMask(ID3D11Device* device, ID3D11DeviceContext* context)
+{
+	if (isMatrixDirty)
+	{
+		createWorldMatrix();
+	}
+
+
+	SimpleVertexShader* vShader = material->getVertexShader();
+	//vShader->SetMatrix4x4("world", worldMatrix);
+	//vShader->SetMatrix4x4("view", camera->getViewMatrix());
+	//vShader->SetMatrix4x4("projection", camera->getProjectionMatrix());
+	vShader->SetShader();
 
 	mesh->draw(device, context);
 

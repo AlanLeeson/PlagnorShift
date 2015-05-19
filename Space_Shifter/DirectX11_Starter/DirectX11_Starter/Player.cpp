@@ -41,6 +41,16 @@ void Player::setRocket(Mesh*mesh, Material*material)
 	//rocket->setPosition(-3.0f, 4.0f, 2.0f);
 }
 
+bool Player::getIsMoving()
+{
+	return this->animateMovement;
+}
+
+int Player::getDirection()
+{
+	return direction;
+}
+
 Obstacle * Player::getRocket()
 {
 	return rocket;
@@ -83,7 +93,7 @@ void Player::Update(float dt)
 		}
 
 		// Move the player based on his direction
-		int direction = targetRail > currentRail ? 1 : -1;
+		direction = targetRail > currentRail ? 1 : -1;
 		GameEntity::move(horizontalSpeed * direction * dt, 0.0f, 0.0f);
 
 		XMFLOAT3 position = GameEntity::getPosition();

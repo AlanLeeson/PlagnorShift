@@ -27,6 +27,7 @@ public:
 	std::vector<Light*> getLights(void);
 
 	void render(GameEntity*, Camera*);
+	void renderMask(GameEntity*, Camera*);
 	void renderAll(Camera*);
 	void renderAllWithShaders(SimpleVertexShader*, SimplePixelShader*);
 

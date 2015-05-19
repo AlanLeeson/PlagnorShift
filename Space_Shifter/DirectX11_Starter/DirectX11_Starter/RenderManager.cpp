@@ -116,6 +116,16 @@ void RenderManager::render(GameEntity* renderEntity, Camera* renderCamera)
 	entity->draw(device, deviceContext);
 }
 
+void RenderManager::renderMask(GameEntity* renderEntity, Camera* renderCamera)
+{
+	this->entity = renderEntity;
+	this->camera = renderCamera;
+
+	setBufferData();
+
+	entity->drawMask(device, deviceContext);
+}
+
 void RenderManager::renderAll(Camera* renderCamera)
 {
 	for (int i = 0; i < entities.size(); i++)
