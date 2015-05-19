@@ -59,15 +59,15 @@ MyDemoGame::MyDemoGame(HINSTANCE hInstance) : DirectXGame(hInstance)
 	windowHeight = 600;
 
 	//initialize engine particle data
-	particleStartPosition = XMFLOAT3(0, 0, 0);
-	particleStartVelocity = XMFLOAT3(0, 0, 0);
+	particleStartPosition = XMFLOAT3(-0.84f, 0.03f, 0);
+	particleStartVelocity = XMFLOAT3(0.5f, 0, 0);
 	particleStartColor = XMFLOAT4(0.5f, 0.5f, 1, 0);
 	particleMidColor = XMFLOAT4(0.6f, 0.6f, 1, 0.1f);
 	particleEndColor = XMFLOAT4(0.9f, 0.9f, 1, 0);
 	particleStartSize = 1;
 	particleMidSize = 2;
 	particleEndSize = 8;
-	particleAgeToSpawn = 0.01f;
+	particleAgeToSpawn = 0.005f;
 	particleMaxLifetime = 1.0f;
 	particleConstantAccel = XMFLOAT3(0, -1.0f, 0);
 }
@@ -487,6 +487,8 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	sampDesc.MipLODBias = 0;
+	sampDesc.MaxAnisotropy = 0;
 	device->CreateSamplerState(&sampDesc, &sampState);
 
 	// Create SO buffers
@@ -516,7 +518,7 @@ void MyDemoGame::loadTextures()
 	resource_manager->loadTexture("WoodFine0031_19_S.jpg", sd, "wood");
 	resource_manager->loadTexture("MetalBare0144_1_S.jpg", sd, "metal");
 	resource_manager->loadTexture("RailTexture.png", sd, "RailTexture");
-	resource_manager->loadTexture("plagnortex2.png", sd, "racerTexture");
+	resource_manager->loadTexture("plagnortex.png", sd, "racerTexture");
 
 	//Render target setup
 	D3D11_TEXTURE2D_DESC rtDesc;
@@ -733,13 +735,12 @@ void MyDemoGame::DrawSpawn()
 	SwapSOBuffers();
 }
 
-
 // Clear the screen, redraw everything, present
 void MyDemoGame::DrawScene()
 {
-	
+
 	// Background color (Cornflower Blue in this case) for clearing
-	const float color[4] = {0.2f, 0.2f, 0.4f, 1.0f};
+	const float color[4] = { 0.2f, 0.2f, 0.4f, 1.0f };
 	const float blurColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	const float maskColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -770,7 +771,7 @@ void MyDemoGame::DrawScene()
 	//  - Do this once per frame
 	//  - At the beginning (before drawing anything)
 	deviceContext->ClearDepthStencilView(
-		depthStencilView, 
+		depthStencilView,
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL,
 		1.0f,
 		0);
@@ -789,14 +790,14 @@ void MyDemoGame::DrawScene()
 	}
 
 	quadVS->SetShader();
-	
+
 	// Set data
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	ID3D11Buffer* vb = fullscreenQuad->getVertexBuffer();
 	deviceContext->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
 	deviceContext->IASetIndexBuffer(fullscreenQuad->getIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-	
+
 	//Get the highlights for the bloom shader
 	deviceContext->OMSetRenderTargets(1, &rtv_highlight, 0);
 	deviceContext->ClearRenderTargetView(rtv_highlight, blurColor);
@@ -832,7 +833,7 @@ void MyDemoGame::DrawScene()
 
 	// Draw
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
-	
+
 	// Get the final bloom composite
 	deviceContext->OMSetRenderTargets(1, &rtv_final, 0);
 	deviceContext->ClearRenderTargetView(rtv_final, color);
@@ -866,40 +867,43 @@ void MyDemoGame::DrawScene()
 
 	// Stick with the back buffer, but re-enable the depth buffer from earlier
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
-
+	/*
 	// Unset the shader resource
 	ID3D11ShaderResourceView* unset[2] = { 0, 0 };
 	deviceContext->PSSetShaderResources(0, 2, unset);
 	deviceContext->OMSetRenderTargets(0, 0, 0);
-	
-	//DrawSpawn();
+	*/
 
+	deviceContext->GSSetShader(0, 0, 0);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	DrawSpawn();
 	engGeometryShader->SetMatrix4x4("world", player->getWorldMatrix());
 	engGeometryShader->SetMatrix4x4("view", camera->getViewMatrix());
 	engGeometryShader->SetMatrix4x4("projection", camera->getProjectionMatrix());
-	engGeometryShader->SetFloat3("camPos", XMFLOAT3(0, 0, -5));
+	engGeometryShader->SetFloat3("camPos", gameCamera->position);
 	engVertexShader->SetFloat3("acceleration", particleConstantAccel);
 	engVertexShader->SetFloat("maxLifetime", particleMaxLifetime);
 	engPixelShader->SetSamplerState("basicSampler", sampState);
 	engPixelShader->SetShaderResourceView("diffuseTexture", shaderRV);
 	engVertexShader->SetShader();
 	engPixelShader->SetShader();
-	//engGeometryShader->SetShader();
-
+	engGeometryShader->SetShader();
 	//set buffers
 	stride = sizeof(PVertex);
 	offset = 0;
 	deviceContext->IASetVertexBuffers(0, 1, &soBufferRead, &stride, &offset);
-
 	//set blend and depth state
 	float factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	deviceContext->OMSetBlendState(blendState, factor, 0xffffffff);
 	deviceContext->OMSetDepthStencilState(depthState, 0);
-
 	// Draw auto because of stream out
 	deviceContext->DrawAuto();
+	deviceContext->GSSetShader(0, 0, 0);
+	// Unset the shader resource
+	ID3D11ShaderResourceView* unset[2] = { 0, 0 };
+	deviceContext->PSSetShaderResources(0, 2, unset);
+	deviceContext->OMSetRenderTargets(0, 0, 0);
 
-	
 	//****
 	// Present the buffer
 	//  - Puts the stuff on the screen
@@ -907,7 +911,6 @@ void MyDemoGame::DrawScene()
 	//  - Always at the end of the frame
 	HR(swapChain->Present(0, 0));
 }
-
 #pragma endregion
 
 #pragma region Mouse Input

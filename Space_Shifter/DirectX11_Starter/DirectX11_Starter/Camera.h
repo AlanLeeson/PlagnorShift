@@ -21,6 +21,7 @@ public:
 	void rotateCameraRoll(float);
 	void rotateCameraPitch(float);
 
+	XMFLOAT3 position;
 
 private:
 	XMFLOAT4X4 view;
@@ -29,7 +30,6 @@ private:
 	XMFLOAT3 up;
 	XMFLOAT3 forward;
 
-	XMFLOAT3 position;
 	XMFLOAT4 rotation;
 
 	float xrot;
