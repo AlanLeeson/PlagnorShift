@@ -12,7 +12,7 @@ public:
 
 	int GetCount(void);
 	vector<Obstacle*> GetObstacles(void);
-	void pushPowerUp(Mesh * mesh, Material* material);
+	void pushPowerUp(Mesh * mesh, Material* material, string type);
 	void Update(float dt);
 
 private:

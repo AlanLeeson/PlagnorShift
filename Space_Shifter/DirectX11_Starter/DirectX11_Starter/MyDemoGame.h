@@ -116,6 +116,7 @@ private:
 	Mesh* racer;
 	Mesh* m_powerUp;
 	Mesh* pu_rocket;
+	Mesh* pu_stopWatch;
 
 	GameEntity* e_rail;
 	GameEntity* e_rail2;
@@ -137,6 +138,7 @@ private:
 	Player* player;
 	Obstacle* powerUp;
 	Obstacle* rocket;
+	Obstacle* stopWatch;
 
 	Mesh* m_obstacle;
 	ObstacleManager* obstacleManager;

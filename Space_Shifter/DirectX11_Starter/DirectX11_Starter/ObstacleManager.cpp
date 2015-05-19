@@ -29,8 +29,8 @@ int ObstacleManager::GetCount(void)
 	return obstacles.size();
 }
 
-void ObstacleManager::pushPowerUp(Mesh * mesh, Material * material){
-	obstacles.push_back(new PowerUp(mesh, material));
+void ObstacleManager::pushPowerUp(Mesh * mesh, Material * material, string type){
+	obstacles.push_back(new PowerUp(mesh, material, type));
 }
 
 vector<Obstacle*> ObstacleManager::GetObstacles(void)

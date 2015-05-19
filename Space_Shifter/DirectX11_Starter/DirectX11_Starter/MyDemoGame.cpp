@@ -120,9 +120,12 @@ MyDemoGame::~MyDemoGame()
 	delete m_powerUp;
 	m_powerUp = nullptr;
 
+	delete pu_stopWatch;
+	pu_stopWatch = nullptr;
+
 	delete pu_rocket;
 	pu_rocket = nullptr;
-
+	 
 	delete obstacleManager;
 	obstacleManager = nullptr;
 
@@ -239,6 +242,7 @@ void MyDemoGame::createEntities()
 	resource_manager->getMesh("obstacle", &m_obstacle);
     resource_manager->getMesh("powerUp", &m_powerUp);
 	resource_manager->getMesh("rocket", &pu_rocket);
+	resource_manager->getMesh("stopWatch", &pu_stopWatch);
 
 	e_rail = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail);
@@ -267,7 +271,8 @@ void MyDemoGame::createEntities()
 	//bounding_box_manager->boundingBoxes.push_back(player->boundingBox);
 	// Obstacles
 	obstacleManager = new ObstacleManager(10, m_obstacle, obstacleTexture); 
-	obstacleManager->pushPowerUp(m_powerUp, powerUpTexture);
+	obstacleManager->pushPowerUp(m_powerUp, powerUpTexture, "rocket");
+	obstacleManager->pushPowerUp(pu_stopWatch, powerUpTexture, "stopWatch");
 	vector<Obstacle*> obstacles = obstacleManager->GetObstacles();
 
 	for (int i = 0; i < obstacleManager->GetCount(); i++)
@@ -425,6 +430,7 @@ void MyDemoGame::loadMeshes()
 	resource_manager->loadMesh("cube.obj", "obstacle");
     resource_manager->loadMesh("rocket.obj", "powerUp");
 	resource_manager->loadMesh("rocket.obj", "rocket");
+	resource_manager->loadMesh("stopWatch.obj", "stopWatch");
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the

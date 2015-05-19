@@ -35,7 +35,7 @@ void Player::setNumRockets(int num)
 
 void Player::setRocket(Mesh*mesh, Material*material)
 {
-	rocket = new PowerUp(mesh, material);
+	rocket = new PowerUp(mesh, material, "rocket");
 	rocket->SetActive(false);
 	rocket->setRotation(1.5f, 0.0f, 0.0f);
 	//rocket->setPosition(-3.0f, 4.0f, 2.0f);
