@@ -20,4 +20,11 @@ private:
 
 	float spawnCooldown;
 	float timeSinceLastSpawn;
+
+	// Deals with the amount of time that passes since the speed
+	// at which the obstacles spawn at has changed
+	float spawnFastAfterNumSeconds;
+	float timeSinceLastSpawnChange;
+
+	float minSpawnTime;
 };

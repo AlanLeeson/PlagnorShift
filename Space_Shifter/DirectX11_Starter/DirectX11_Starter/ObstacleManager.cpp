@@ -2,8 +2,13 @@
 
 ObstacleManager::ObstacleManager(int numObstacles, Mesh* mesh, Material* material)
 {
-	spawnCooldown = 0.5f; 
+	spawnCooldown = 1.5f; 
 	timeSinceLastSpawn = 0.0f;
+
+	spawnFastAfterNumSeconds = 5.0f;
+	timeSinceLastSpawnChange = 0.0f;
+
+	minSpawnTime = 0.5f;
 
 	for (int i = 0; i < numObstacles; i++)
 	{
@@ -36,6 +41,7 @@ vector<Obstacle*> ObstacleManager::GetObstacles(void)
 void ObstacleManager::Update(float dt)
 {
 	timeSinceLastSpawn += dt;
+	timeSinceLastSpawnChange += dt;
 
 	for (int i = 0; i < GetCount(); i++)
 	{
@@ -59,11 +65,26 @@ void ObstacleManager::Update(float dt)
 			{
 				obstacle->SetActive(true);
 				obstacle->ResetLocation();
+				timeSinceLastSpawn = 0.0f;
 			}
 		}
 	}
-	if (timeSinceLastSpawn >= spawnCooldown)
+
+	if (timeSinceLastSpawnChange >= spawnFastAfterNumSeconds)
 	{
-		timeSinceLastSpawn = 0.0f;
+		if (spawnCooldown > minSpawnTime)
+		{
+			spawnCooldown *= 0.9f;
+			timeSinceLastSpawnChange = 0.0f;
+
+			for (int i = 0; i < GetCount(); i++)
+			{
+				obstacles[i]->SpeedUp(2.5f);
+			}
+		}
+		else
+		{
+			spawnCooldown = minSpawnTime;
+		}
 	}
 }

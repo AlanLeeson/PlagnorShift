@@ -9,7 +9,7 @@ Obstacle::Obstacle(Mesh* mesh, Material* material)
 	active = false;
 
 	speed = 15.0f;
-	startPosZ = 25.0f;
+	startPosZ = 50.0f;
 	finishPosZ = -4.0f;
 	this->setScale(2.0f, 2.0f, 2.0f);
 	this->setPosition(0.0f, -0.25f, -10.0f);
@@ -24,6 +24,11 @@ Obstacle::~Obstacle(void)
 float Obstacle::Active(void)
 {
 	return active;
+}
+
+void Obstacle::SpeedUp(float amount)
+{
+	speed += amount;
 }
 
 void Obstacle::SetActive(bool active)
