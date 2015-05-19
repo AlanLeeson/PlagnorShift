@@ -3,6 +3,8 @@
 #include "GameEntity.h"
 #include <vector>
 #include "BoundingBox.h"
+#include "PowerUp.h"
+#include "Obstacle.h"
 
 class Player :
 	public GameEntity
@@ -17,9 +19,11 @@ public:
 	void move(int direction);
 
 	void Update(float dt);
+	Obstacle *getRocket();
+	void setRocket(Mesh*mesh, Material*material);
 
 	int getNumRockets();
-	void setNumRockets(int num);
+	void setNumRockets(int num); 
 
 private:
 	vector<float> railPosX;
@@ -28,7 +32,8 @@ private:
 	Rail targetRail;
 
 	bool animateMovement;
-
+	bool fireRocket;
+	Obstacle * rocket;
 	int numRockets;
 
 	float horizontalSpeed;

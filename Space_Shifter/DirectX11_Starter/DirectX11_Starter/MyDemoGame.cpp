@@ -107,6 +107,9 @@ MyDemoGame::~MyDemoGame()
 	delete m_powerUp;
 	m_powerUp = nullptr;
 
+	delete pu_rocket;
+	pu_rocket = nullptr;
+
 	delete obstacleManager;
 	obstacleManager = nullptr;
 
@@ -208,6 +211,7 @@ void MyDemoGame::createEntities()
 	resource_manager->getMesh("racer", &racer);
 	resource_manager->getMesh("obstacle", &m_obstacle);
     resource_manager->getMesh("powerUp", &m_powerUp);
+	resource_manager->getMesh("rocket", &pu_rocket);
 
 	e_rail = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail);
@@ -216,28 +220,28 @@ void MyDemoGame::createEntities()
 	e_rail3 = new GameEntity(rail, railTexture);
 	render_manager->addEntity(e_rail3);
 
-	//position rails
-	e_rail->rotate(0.0f, 1.55f, -0.05f);
-	e_rail->setScale(2.0f, 1.0f, 1.0f);
-	e_rail2->rotate(0.0f, 1.55f, -0.05f);
-	e_rail2->setScale(2.0f, 1.0f, 1.0f);
-	e_rail3->rotate(0.0f, 1.55f, -0.05f);
-	e_rail3->setScale(2.0f, 1.0f, 1.0f);
+	//position rails 
+	e_rail->rotate(0.0f, 1.55f, 0.0f);
+	e_rail->setScale(2.5f, 1.0f, 1.0f);
+	e_rail2->rotate(0.0f, 1.55f, 0.0f);
+	e_rail2->setScale(2.5f, 1.0f, 1.0f);
+	e_rail3->rotate(0.0f, 1.55f, 0.0f);
+	e_rail3->setScale(2.5f, 1.0f, 1.0f);
 
-	e_rail->setPosition(-3.0f, -2.0f, 12.0f);
-	e_rail2->setPosition(0.5f, -2.0f, 12.0f);
-	e_rail3->setPosition(3.5f, -2.0f, 12.0f);
+	e_rail->setPosition(-3.0f, -2.0f, 10.0f);
+	e_rail2->setPosition(0.5f, -2.0f, 10.0f);
+	e_rail3->setPosition(3.5f, -2.0f, 10.0f);
 
 	// Player
 	player = new Player(racer, simpleMat_racer);
 	render_manager->addEntity(player);
+	player->setRocket(pu_rocket, powerUpTexture);
+	render_manager->addEntity(player->getRocket());
 	//bounding_box_manager->boundingBoxes.push_back(player->boundingBox);
 	// Obstacles
-	obstacleManager = new ObstacleManager(4, m_obstacle, obstacleTexture);
+	obstacleManager = new ObstacleManager(10, m_obstacle, obstacleTexture); 
 	obstacleManager->pushPowerUp(m_powerUp, powerUpTexture);
 	vector<Obstacle*> obstacles = obstacleManager->GetObstacles();
-	//powerUp = new PowerUp(m_powerUp, powerUpTexture);
-	//obstacles.push_back(powerUp);
 
 	for (int i = 0; i < obstacleManager->GetCount(); i++)
 	{
@@ -276,6 +280,7 @@ void MyDemoGame::loadMeshes()
 	resource_manager->loadMesh("racer.obj", "racer");
 	resource_manager->loadMesh("cube.obj", "obstacle");
     resource_manager->loadMesh("rocket.obj", "powerUp");
+	resource_manager->loadMesh("rocket.obj", "rocket");
 }
 
 // Loads shaders from compiled shader object (.cso) files, and uses the
@@ -429,6 +434,13 @@ void MyDemoGame::UpdateScene(float dt)
 			else if (bounding_box_manager->boundingBoxes[i]->name == "powerUp"){
 				player->setNumRockets(player->getNumRockets() + 1);
 			}
+		}
+		else if (bounding_box_manager->checkCollision(player->getRocket()->boundingBox, bounding_box_manager->boundingBoxes[i]))
+		{
+			//destroy the box
+			if (bounding_box_manager->boundingBoxes[i]->name == "obstacle"){
+				bounding_box_manager->boundingBoxes[i]->collidable = false;
+			} 
 		}
 	}
 }

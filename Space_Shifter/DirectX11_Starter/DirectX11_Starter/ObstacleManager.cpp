@@ -2,7 +2,7 @@
 
 ObstacleManager::ObstacleManager(int numObstacles, Mesh* mesh, Material* material)
 {
-	spawnCooldown = 1.0f;
+	spawnCooldown = 0.5f; 
 	timeSinceLastSpawn = 0.0f;
 
 	for (int i = 0; i < numObstacles; i++)

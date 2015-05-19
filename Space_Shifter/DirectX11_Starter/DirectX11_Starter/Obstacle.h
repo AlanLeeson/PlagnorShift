@@ -16,7 +16,8 @@ public:
 
 	void SetActive(bool active);
 	void ResetLocation(void);
-	void Update(float dt);
+	virtual void Update(float dt);
+	virtual void fireRocket(float dt);
 
 private:
 	vector<float> positions;

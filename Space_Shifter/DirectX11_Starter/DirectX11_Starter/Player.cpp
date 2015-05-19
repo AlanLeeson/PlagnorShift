@@ -7,16 +7,17 @@ Player::Player(Mesh* mesh, Material* material)
 	targetRail = Middle;
 
 	animateMovement = false;
+	fireRocket = false;
 	horizontalSpeed = 10.0f;
-	numRockets = 0;
+	numRockets = 5;
 	railPosX = { -2.0f, 1.3f, 4.5f };
 
 	this->setScale(0.6f, 0.6f, 0.6f);
-	this->setPosition(railPosX[this->currentRail], -0.75f, 6.0f);
+	this->setPosition(railPosX[this->currentRail], -0.75f, 3.0f);
 	this->rotate(0.0f, 0.0f, 0.05f);
-
-	this->boundingBox = new BoundingBox("player", this->getPosition(), XMFLOAT3(1, 1, 1));
-
+	XMFLOAT3 curPos = this->getPosition();
+	XMFLOAT3 newPos = XMFLOAT3(curPos.x - 1.0f, curPos.y, curPos.z); 
+	this->boundingBox = new BoundingBox("player", newPos, XMFLOAT3(0.8, 1, 1));
 }
 Player::~Player()
 {
@@ -32,6 +33,18 @@ void Player::setNumRockets(int num)
 	numRockets = num;
 }
 
+void Player::setRocket(Mesh*mesh, Material*material)
+{
+	rocket = new PowerUp(mesh, material);
+	rocket->SetActive(false);
+	rocket->setRotation(1.5f, 0.0f, 0.0f);
+	//rocket->setPosition(-3.0f, 4.0f, 2.0f);
+}
+
+Obstacle * Player::getRocket()
+{
+	return rocket;
+}
 
 void Player::move(int direction)
 { 
@@ -57,6 +70,9 @@ void Player::move(int direction)
 
 void Player::Update(float dt)
 {
+	if (rocket->Active()){
+		rocket->fireRocket(dt);
+	}
 	if (animateMovement)
 	{
 		// Don't animate if you are already on your target rail
@@ -96,9 +112,12 @@ void Player::Update(float dt)
 		}
 	}
 
-	if (numRockets > 0 && GetAsyncKeyState(VK_SPACE) < 0)
+	if (numRockets > 0 && GetAsyncKeyState(VK_SPACE) < 0 && !rocket->Active())
 	{
-		rotate(0.0f, 0.1f, 0.0f);
+		rocket->SetActive(true);
+		fireRocket = true;
+		XMFLOAT3 position = GameEntity::getPosition();
+		rocket->setPosition(position.x-1.45f,position.y+0.8f,position.z);
 		numRockets--;
 	}
 }

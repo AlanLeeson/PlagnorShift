@@ -13,11 +13,11 @@ Camera::Camera(float aspectRatio)
 	XMStoreFloat4x4(&projection, XMMatrixTranspose(P));
 	forward = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	up = XMFLOAT3(0.0f, 1.0f, 0.0f);
-	position = XMFLOAT3(0.0f, 2.0f, -5.0f);
+	position = XMFLOAT3(0.0f, 2.1f, -5.0f);
 	XMVECTOR r = XMQuaternionIdentity();
 	XMStoreFloat4(&rotation, r);
-	xrot = 0.0f;
-	yrot = 0.0f;
+	xrot = 0.1f;
+	yrot = 0.0f; 
 	moveSpeed = 1.0f;
 	rotSpeed = 0.001f;
 
