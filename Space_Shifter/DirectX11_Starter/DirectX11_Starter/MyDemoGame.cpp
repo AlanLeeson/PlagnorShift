@@ -443,6 +443,7 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	resource_manager->loadPixelShader("Gauss_blur_vertical_PS.cso", "Gauss_Vertical");
 
 	resource_manager->loadPixelShader("Blur_PS.cso", "Blur");
+	resource_manager->loadPixelShader("MaskPS.cso", "Mask");
 
 	resource_manager->getVertexShader("FullScreenQuad", &quadVS);
 	resource_manager->getPixelShader("FullScreenQuad", &quadPS);
@@ -452,6 +453,7 @@ void MyDemoGame::LoadShadersAndInputLayout()
 	resource_manager->getPixelShader("Gauss_Vertical", &bloom_gauss_vPS);
 
 	resource_manager->getPixelShader("Blur", &blurPS);
+	resource_manager->getPixelShader("Mask", &maskPS);
 
 	//stuff for geometry shader particles (should probably use resource manager for most of this...
 	engVertexShader = new SimpleVertexShader(device, deviceContext);
@@ -525,6 +527,7 @@ void MyDemoGame::loadTextures()
 	rtDesc.Usage = D3D11_USAGE_DEFAULT;
 
 	device->CreateTexture2D(&rtDesc, 0, &renderTexture);
+	device->CreateTexture2D(&rtDesc, 0, &maskTexture);
 	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_original);
 	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_highlight);
 	device->CreateTexture2D(&rtDesc, 0, &bloomTexture_gaussH);
@@ -538,6 +541,7 @@ void MyDemoGame::loadTextures()
 	rtvDesc.Texture2D.MipSlice = 0;
 
 	device->CreateRenderTargetView(renderTexture, &rtvDesc, &rtView);
+	device->CreateRenderTargetView(maskTexture, &rtvDesc, &rtv_mask);
 	device->CreateRenderTargetView(bloomTexture_original, &rtvDesc, &rtv_original);
 	device->CreateRenderTargetView(bloomTexture_highlight, &rtvDesc, &rtv_highlight);
 	device->CreateRenderTargetView(bloomTexture_gaussH, &rtvDesc, &rtv_gaussH);
@@ -552,6 +556,7 @@ void MyDemoGame::loadTextures()
 	srvDesc.Texture2D.MostDetailedMip = 0;
 
 	device->CreateShaderResourceView(renderTexture, &srvDesc, &rtSRV);
+	device->CreateShaderResourceView(maskTexture, &srvDesc, &rtsrv_mask);
 	device->CreateShaderResourceView(bloomTexture_original, &srvDesc, &rtsrv_original);
 	device->CreateShaderResourceView(bloomTexture_highlight, &srvDesc, &rtsrv_highlight);
 	device->CreateShaderResourceView(bloomTexture_gaussH, &srvDesc, &rtsrv_gaussH);
@@ -719,8 +724,9 @@ void MyDemoGame::DrawScene()
 {
 	
 	// Background color (Cornflower Blue in this case) for clearing
-	const float color[4] = {0.2f, 0.2f, 0.4f, 0.0f};
+	const float color[4] = {0.2f, 0.2f, 0.4f, 1.0f};
 	const float blurColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	const float maskColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	// Set up the input assembler
 	//  - These technically don't need to be set every frame, unless you're changing the
@@ -728,6 +734,18 @@ void MyDemoGame::DrawScene()
 	//    between draws
 	//deviceContext->IASetInputLayout(inputLayout);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	deviceContext->OMSetRenderTargets(1, &rtv_mask, depthStencilView);
+	deviceContext->ClearRenderTargetView(rtv_mask, maskColor);
+
+	maskPS->SetShader();
+	//Renders all game entities with a specific camera
+	if (whichCam){
+		render_manager->renderMask(player, camera);
+	}
+	else{
+		render_manager->renderMask(player, gameCamera);
+	}
 
 	//Render to texture
 	deviceContext->OMSetRenderTargets(1, &rtv_original, depthStencilView);
@@ -800,7 +818,7 @@ void MyDemoGame::DrawScene()
 	// Draw
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
 	
-	// Go back to the regular "back buffer"
+	// Get the final bloom composite
 	deviceContext->OMSetRenderTargets(1, &rtv_final, 0);
 	deviceContext->ClearRenderTargetView(rtv_final, color);
 
@@ -814,15 +832,18 @@ void MyDemoGame::DrawScene()
 	// Draw
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
 
-	//Blur everything but the player
+	//Go back to the regular "back buffer"
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, 0);
 	deviceContext->ClearRenderTargetView(renderTargetView, blurColor);
 
 	blurPS->SetFloat2("pixelSize", XMFLOAT2(1.0f / windowWidth, 1.0f / windowHeight));
 	float moveFloat = player->getIsMoving() ? 1.0f : 0.0f;
+	float moveDir = player->getDirection() > 0 ? 1.0f : -1.0f;
 	blurPS->SetFloat("moving", moveFloat);
+	blurPS->SetFloat("direction", moveDir);
 	blurPS->SetSamplerState("basicSampler", sampler);
 	blurPS->SetShaderResourceView("diffuseTexture", rtsrv_final);
+	blurPS->SetShaderResourceView("maskTexture", rtsrv_mask);
 	blurPS->SetShader();
 
 	// Draw

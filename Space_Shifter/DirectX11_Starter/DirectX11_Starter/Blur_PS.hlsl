@@ -6,6 +6,7 @@ cbuffer blurData : register(b0)
 	int blurAmount;
 	float2 pixelSize;
 	float moving;
+	float direction;
 }
 
 // Defines the input to this pixel shader
@@ -18,7 +19,7 @@ struct VertexToPixel
 
 // TEXTURE STUFF
 Texture2D diffuseTexture : register(t0);
-//Texture2D maskTexture : register(t1);
+Texture2D maskTexture : register(t1);
 SamplerState basicSampler : register(s0);
 
 // Entry point for this pixel shader
@@ -27,23 +28,24 @@ float4 main(VertexToPixel input) : SV_TARGET
 	// Sample all pixels
 	float4 finalColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
-	//float4 maskColor = maskTexture.Sample(basicSampler, input.uv);
+	float4 maskColor = maskTexture.Sample(basicSampler, input.uv);
 
 	//Blur the non-masked colors
-	if (moving == 1.0f)
+	if (moving == 1.0f && maskColor.x == finalColor.x && maskColor.y == finalColor.y && maskColor.z == finalColor.z)
 	{
-		for (int i = 0; i <= blurSize * 2; i++)
+		for (int i = 0; i <= blurSize; i++)
 		{
-			float2 offset = float2(pixelSize.x * (i - blurSize), 0.0f);
-				finalColor += diffuseTexture.Sample(basicSampler, input.uv + offset);
+			float2 offset = float2(pixelSize.x * i, 0.0f);
+			offset.x *= direction;
+			finalColor += diffuseTexture.Sample(basicSampler, input.uv + offset);
 		}
-		finalColor /= blurSize * 2;
+		finalColor /= blurSize;
 	}
 	else
 	{
 		finalColor = diffuseTexture.Sample(basicSampler, input.uv);
 	}
 
-	//return float4(1.0, 0.0f, 0.0f, 1.0f);
+	//return maskColor;
 	return finalColor;
 }

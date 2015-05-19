@@ -93,6 +93,10 @@ private:
 	SimplePixelShader* blurPS;
 	SimplePixelShader* maskPS;
 
+	ID3D11Texture2D* maskTexture;
+	ID3D11RenderTargetView* rtv_mask;
+	ID3D11ShaderResourceView* rtsrv_mask;
+
 	ID3D11Texture2D* bloomTexture_highlight;
 	ID3D11RenderTargetView* rtv_highlight;
 	ID3D11ShaderResourceView* rtsrv_highlight;

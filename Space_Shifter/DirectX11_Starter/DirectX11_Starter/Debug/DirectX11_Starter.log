@@ -1,15 +1,15 @@
-﻿Build started 5/19/2015 2:48:55 PM.
+﻿Build started 5/19/2015 3:43:27 PM.
      1>Project "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" on node 2 (Build target(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(381,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (DirectX11_Starter.vcxproj, DirectX11_HW3.vcxproj, DirectX11_HW4.vcxproj).  This can lead to incorrect clean and rebuild behavior.
      1>FxCompile:
          C:\Program Files (x86)\Windows Kits\8.1\bin\x86\fxc.exe /nologo /E"main" /T ps_4_0_level_9_3 /Fo "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Blur_PS.cso" /Od /Zi Blur_PS.hlsl 
+     1>C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectX11_Starter\Blur_PS.hlsl(40,18-71): warning X3570: gradient instruction used in a loop with varying iteration, forcing loop to unroll
+         
          compilation object save succeeded; see C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Blur_PS.cso
-         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\fxc.exe /nologo /E"main" /T ps_4_0_level_9_1 /Fo "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\MaskPS.cso" /Od /Zi MaskPS.hlsl 
-         compilation object save succeeded; see C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\MaskPS.cso
        Link:
          DirectX11_Starter.vcxproj -> C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\Debug\Lap_01.exe
      1>Done Building Project "C:\Users\Matt Zeosky\Documents\GitHub\PlagnorShift\Space_Shifter\DirectX11_Starter\DirectX11_Starter\DirectX11_Starter.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.17
+Time Elapsed 00:00:00.81

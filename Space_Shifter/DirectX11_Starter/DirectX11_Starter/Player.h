@@ -25,12 +25,15 @@ public:
 	int getNumRockets();
 	void setNumRockets(int num);
 	bool getIsMoving();
+	int getDirection();
 
 private:
 	vector<float> railPosX;
 	
 	Rail currentRail;
 	Rail targetRail;
+
+	int direction;
 
 	bool animateMovement;
 	bool fireRocket;
