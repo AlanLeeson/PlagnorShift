@@ -322,7 +322,7 @@ void MyDemoGame::CreateGeometryBuffers()
 	// Create the vertex buffer
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(Vertex)* 1; // Number of vertices in the "model" you want to draw
+	vbd.ByteWidth = sizeof(PVertex)* 1; // Number of vertices in the "model" you want to draw
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 	vbd.MiscFlags = 0;
@@ -558,6 +558,23 @@ void MyDemoGame::InitializeCameraMatrices()
 {
 	camera = new Camera(AspectRatio());
 	gameCamera = new Camera(AspectRatio());
+
+	//again, tesing only
+	XMVECTOR position = XMVectorSet(0, 0, -10, 0);
+	XMVECTOR target = XMVectorSet(0, 0, 0, 0);
+	XMVECTOR up = XMVectorSet(0, 1, 0, 0);
+	XMMATRIX V = XMMatrixLookAtLH(position, target, up); // View matrix creation:
+	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V));
+	XMMATRIX P = XMMatrixPerspectiveFovLH(
+		0.25f * 3.1415926535f,		// Field of View Angle
+		AspectRatio(),				// Aspect ratio
+		0.1f,						// Near clip plane distance
+		100.0f);					// Far clip plane distance
+	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P));
+
+
+	XMMATRIX W = XMMatrixIdentity();
+	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(W));
 }
 
 #pragma endregion
@@ -574,6 +591,15 @@ void MyDemoGame::OnResize()
 	//Resizing hapens before camera is initialized?
 	if (camera) camera->resize(AspectRatio());
 	if (gameCamera) gameCamera->resize(AspectRatio());
+
+	//testing only 
+	// Update our projection matrix since the window size changed
+	XMMATRIX P = XMMatrixPerspectiveFovLH(
+		0.25f * 3.1415926535f,
+		AspectRatio(),
+		0.1f,
+		100.0f);
+	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P));
 }
 #pragma endregion
 
@@ -583,7 +609,7 @@ float x = 0;
 void MyDemoGame::UpdateScene(float dt)
 {
 	x += dt;
-
+	
 	// Take input, update game logic, etc.
 	if (whichCam){
 		camera->Update(dt);
@@ -649,7 +675,7 @@ void MyDemoGame::DrawSpawn()
 	engSpawnGS->SetShaderResourceView("randomTexture", randomSRV);
 
 	engSpawnVS->SetShader();
-	engSpawnVS->SetShader();
+	engSpawnGS->SetShader();
 	deviceContext->PSSetShader(0, 0, 0); // No pixel shader needed
 
 	// Unbind vertex buffers (incase)
@@ -684,6 +710,7 @@ void MyDemoGame::DrawSpawn()
 // Clear the screen, redraw everything, present
 void MyDemoGame::DrawScene()
 {
+	
 	// Background color (Cornflower Blue in this case) for clearing
 	const float color[4] = {0.2f, 0.2f, 0.4f, 0.0f};
 	const float blurColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -698,7 +725,7 @@ void MyDemoGame::DrawScene()
 	//Render to texture
 	deviceContext->OMSetRenderTargets(1, &rtv_original, depthStencilView);
 	deviceContext->ClearRenderTargetView(rtv_original, color);
-
+	deviceContext->ClearRenderTargetView(renderTargetView, color);
 	// Clear the buffer (erases what's on the screen)
 	//  - Do this once per frame
 	//  - At the beginning (before drawing anything)
@@ -781,13 +808,42 @@ void MyDemoGame::DrawScene()
 	deviceContext->DrawIndexed(fullscreenQuad->getIndexCount(), 0, 0);
 
 	// Stick with the back buffer, but re-enable the depth buffer from earlier
-	//deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 	// Unset the shader resource
 	ID3D11ShaderResourceView* unset[2] = { 0, 0 };
 	deviceContext->PSSetShaderResources(0, 2, unset);
 	deviceContext->OMSetRenderTargets(0, 0, 0);
+	
+	//DrawSpawn();
 
+	engGeometryShader->SetMatrix4x4("world", player->getWorldMatrix());
+	engGeometryShader->SetMatrix4x4("view", camera->getViewMatrix());
+	engGeometryShader->SetMatrix4x4("projection", camera->getProjectionMatrix());
+	engGeometryShader->SetFloat3("camPos", XMFLOAT3(0, 0, -5));
+	engVertexShader->SetFloat3("acceleration", particleConstantAccel);
+	engVertexShader->SetFloat("maxLifetime", particleMaxLifetime);
+	engPixelShader->SetSamplerState("basicSampler", sampState);
+	engPixelShader->SetShaderResourceView("diffuseTexture", shaderRV);
+	engVertexShader->SetShader();
+	engPixelShader->SetShader();
+	//engGeometryShader->SetShader();
+
+	//set buffers
+	stride = sizeof(PVertex);
+	offset = 0;
+	deviceContext->IASetVertexBuffers(0, 1, &soBufferRead, &stride, &offset);
+
+	//set blend and depth state
+	float factor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	deviceContext->OMSetBlendState(blendState, factor, 0xffffffff);
+	deviceContext->OMSetDepthStencilState(depthState, 0);
+
+	// Draw auto because of stream out
+	deviceContext->DrawAuto();
+
+	
+	//****
 	// Present the buffer
 	//  - Puts the stuff on the screen
 	//  - Do this EXACTLY once per frame

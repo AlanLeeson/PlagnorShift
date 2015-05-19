@@ -175,4 +175,9 @@ private:
 	float particleAgeToSpawn;
 	float particleMaxLifetime;
 	XMFLOAT3 particleConstantAccel;
+
+	//for testing
+	XMFLOAT4X4 worldMatrix;
+	XMFLOAT4X4 viewMatrix;
+	XMFLOAT4X4 projectionMatrix;
 };
