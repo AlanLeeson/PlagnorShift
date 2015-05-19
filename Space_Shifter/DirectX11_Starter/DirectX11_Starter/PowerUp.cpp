@@ -1,10 +1,15 @@
 #include "PowerUp.h"
 
 
-PowerUp::PowerUp(Mesh * mesh, Material * material) : Obstacle(mesh,material)
+PowerUp::PowerUp(Mesh * mesh, Material * material, string type) : Obstacle(mesh,material)
 {
-	this->setScale(0.12f, 0.12f, 0.12f);
-	this->boundingBox = new BoundingBox("powerUp", this->getPosition(), XMFLOAT3(1, 1, 1));
+	if (type == "rocket"){
+		this->setScale(0.2f, 0.2f, 0.2f);
+	}
+	else if (type == "stopWatch"){
+		this->setScale(0.5f, 0.5f, 0.5f);
+	}
+	this->boundingBox = new BoundingBox(type, this->getPosition(), XMFLOAT3(1, 1, 1));
 }
 
 

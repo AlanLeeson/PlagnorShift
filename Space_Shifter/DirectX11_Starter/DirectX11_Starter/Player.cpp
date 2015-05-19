@@ -10,6 +10,7 @@ Player::Player(Mesh* mesh, Material* material)
 	fireRocket = false;
 	horizontalSpeed = 10.0f;
 	numRockets = 5;
+	numWatches = 1;
 	railPosX = { -2.0f, 1.3f, 4.5f };
 
 	this->setScale(0.6f, 0.6f, 0.6f);
@@ -31,6 +32,16 @@ int Player::getNumRockets()
 void Player::setNumRockets(int num)
 {
 	numRockets = num;
+}
+
+int Player::getNumWatches()
+{
+	return numWatches;
+}
+
+void Player::setNumWatches(int num)
+{
+	numWatches = num;
 }
 
 void Player::setRocket(Mesh*mesh, Material*material)

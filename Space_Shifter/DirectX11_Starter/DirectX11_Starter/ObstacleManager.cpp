@@ -29,6 +29,14 @@ int ObstacleManager::GetCount(void)
 	return obstacles.size();
 }
 
+void ObstacleManager::SlowMotion()
+{
+	for (int i = 0; i < GetCount(); i++)
+	{
+		obstacles[i]->SlowMotion();
+	}
+}
+
 void ObstacleManager::pushPowerUp(Mesh * mesh, Material * material, string type){
 	obstacles.push_back(new PowerUp(mesh, material, type));
 }

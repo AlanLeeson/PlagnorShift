@@ -14,6 +14,7 @@ public:
 
 	bool OutOfBounds(void);
 	void SpeedUp(float amount);
+	void SlowMotion();
 
 	void SetActive(bool active);
 	void ResetLocation(void);

@@ -6,7 +6,7 @@
 class PowerUp : public Obstacle
 {
 public:
-    PowerUp(Mesh *, Material * );
+    PowerUp(Mesh *, Material *, string type );
     ~PowerUp(void);
 	virtual void Update(float dt);
 	void fireRocket(float dt);

@@ -641,6 +641,12 @@ void MyDemoGame::UpdateScene(float dt)
 	{
 		player->move(1);
 	}
+	if (player->getNumWatches() > 0 && GetAsyncKeyState('S') & 0X8000)
+	{
+		obstacleManager->SlowMotion();
+		player->setNumWatches(player->getNumWatches() - 1);
+		player->rotate(0.0f, 0.01f, 0.0f);
+	}
 
 	player->Update(dt);
     p_light01.Position = player->getPosition();
@@ -655,8 +661,11 @@ void MyDemoGame::UpdateScene(float dt)
 			if (bounding_box_manager->boundingBoxes[i]->name == "obstacle"){
 				player->rotate(0.01f, 0.0f, 0.0f);
 			}
-			else if (bounding_box_manager->boundingBoxes[i]->name == "powerUp"){
+			else if (bounding_box_manager->boundingBoxes[i]->name == "rocket"){
 				player->setNumRockets(player->getNumRockets() + 1);
+			}
+			else if (bounding_box_manager->boundingBoxes[i]->name == "stopWatch"){
+				player->setNumWatches(player->getNumWatches() + 1);
 			}
 		}
 		else if (bounding_box_manager->checkCollision(player->getRocket()->boundingBox, bounding_box_manager->boundingBoxes[i]))
@@ -664,7 +673,7 @@ void MyDemoGame::UpdateScene(float dt)
 			//destroy the box
 			if (bounding_box_manager->boundingBoxes[i]->name == "obstacle"){
 				bounding_box_manager->boundingBoxes[i]->collidable = false;
-			} 
+			}
 		}
 	}
 }

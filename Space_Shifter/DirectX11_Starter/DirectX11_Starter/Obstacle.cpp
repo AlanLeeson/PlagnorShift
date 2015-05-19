@@ -31,6 +31,12 @@ void Obstacle::SpeedUp(float amount)
 	speed += amount;
 }
 
+void Obstacle::SlowMotion(){
+	if (speed >= 10.0f){
+		speed = speed - 5.0f;
+	}
+}
+
 void Obstacle::SetActive(bool active)
 {
 	this->active = active;

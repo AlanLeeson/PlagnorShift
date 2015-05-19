@@ -26,6 +26,8 @@ public:
 	void setNumRockets(int num);
 	bool getIsMoving();
 	int getDirection();
+	int getNumWatches();
+	void setNumWatches(int num);
 
 private:
 	vector<float> railPosX;
@@ -39,6 +41,7 @@ private:
 	bool fireRocket;
 	Obstacle * rocket;
 	int numRockets;
+	int numWatches;
 
 	float horizontalSpeed;
 
